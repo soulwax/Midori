@@ -1,10 +1,10 @@
 module.exports = {
   env: {
-    browser: true,
     commonjs: true,
     es2021: true,
+    node: true,
   },
-  extends: 'airbnb-base',
+  extends: 'eslint:recommended',
   overrides: [
     {
       env: {
@@ -22,5 +22,6 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
+
   },
 };
