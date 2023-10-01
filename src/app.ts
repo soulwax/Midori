@@ -33,7 +33,7 @@ server.client.once('ready', async () => {
   //   const guild = firstGuild as unknown as Discord.Guild;
   //   const channels = await guild.channels.fetch();
   //   const generalChannel: TextChannel = channels.find(
-  //     (channel) => channel?.id === '1135408229329944579',
+  //     (channel) => channel?.id === 'process.env.GENERAL_CHANNEL_ID',
   //   ) as TextChannel;
   //   // if (generalChannel) {
   //   //   await generalChannel.send(
@@ -102,27 +102,29 @@ export const textToImage = async (prompt: string): Promise<string[]> => {
 }
 
 server.client.on('messageCreate', async (message: Message) => {
-  const wasMentioned: boolean = message.mentions.has(server.client.user?.id ?? '')
-  console.log(`wasMentioned: ${wasMentioned}`)
-  const mentionedHas = server.client.user?.toString() ?? ''
-  console.log(`mentionedHas: ${mentionedHas}`)
+  const wasRepliedTo: boolean = message.mentions.has(server.client.user?.id ?? '')
+  const doesMentionMyself: boolean  = message.mentions.has(server.client.user?.toString() ?? '')
+  const prompt = message.content.replace(/<@\d+> ?/g, "")
   if (message.content.startsWith('hey')) {
     await message.reply(
       [
         `Hey there! You said **${message.content}**!`,
         '',
-        `This is an example handler that responds to messages starting with "hey"`,
+        `Try mentioning me in a message like this: <@!${server.client.user?.id}>`,
+        '',
+        `Or just reply to me, I will generate an image based off of your message. :pepiwumpy:`,
       ].join('\n'),
     )
   }
-  if (message.mentions.has(server.client.user?.toString() ?? '') || wasMentioned) {
+  if (doesMentionMyself || wasRepliedTo) {
     try {
-      const imagePaths = await textToImage(message.content)
+      await message.reply(`Generating image for ${message.author.displayName}: \`${prompt}\`...`)
+      const imagePaths = await textToImage(prompt)
       const attachment = new AttachmentBuilder(imagePaths[0])
       await message.reply({ files: [attachment] })
     } catch (error) {
       console.error('Error generating image:', error)
-      await message.reply('Sorry, I encountered an error while generating the image.')
+      await message.reply(`Sorry, I encountered an error while generating the image. Reason: ${error}`)
     }
   }
 })

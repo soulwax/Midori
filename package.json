@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "dev": "nodemon --inspect=0.0.0.0:9331 --exec 'ts-node src/app.ts --watch src'",
-    "pm2": "pm2 start dist/app.js --name midoridan",
+    "pm2": "pm2 start dist/app.js --name=Midoridan --node-args=\"--inspect --inspect-port=9331\"",
     "lint": "eslint"
   },
   "repository": {
