@@ -16,10 +16,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import config from './config'
-import fs from 'fs'
+import { textToImage } from './utils'
 import server from './setup'
 import { AttachmentBuilder, Message } from 'discord.js'
-import { TextToImageRequestBody, TextToImageResponseBody } from './types'
+import { Command } from './types'
+
 
 server.client.once('ready', async () => {
   console.log(`Logged in as ${server.client.user?.tag}!`)
@@ -28,67 +29,14 @@ server.client.once('ready', async () => {
   server.client.guilds.cache.forEach((guild) => {
     console.log(` - ${guild.name}`)
   })
-})
-
-const createHeaders = () => ({
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-  Authorization: `Bearer ${config.stableDiffusionApiKey}`,
-})
-
-const createRequestBody = (prompt: string): TextToImageRequestBody => ({
-  steps: 40,
-  width: 512,
-  height: 512,
-  seed: 0,
-  cfg_scale: 5,
-  samples: 1,
-  text_prompts: [
-    {
-      text: prompt,
-      weight: 1,
-    },
-    {
-      text: 'blurry, bad',
-      weight: -1,
-    },
-  ],
-})
-
-const handleErrorResponse = async (response: Response) => {
-  const errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\``
-  console.log(errorMessage)
-  throw new Error(errorMessage)
-}
-
-const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
-  const paths: string[] = []
-  responseJSON.artifacts.forEach((image: { seed: number; base64: string }) => {
-    const path = `./images/out/txt2img_${image.seed}.png`
-    paths.push(path)
-    fs.writeFileSync(path, Buffer.from(image.base64, 'base64'))
+  // List all commands
+  console.log('Commands:')
+  server.client.commands.forEach((command) => {
+    console.log(` - ${(command as Command).name}`)
   })
-  return paths
-}
+})
 
-const textToImage = async (prompt: string): Promise<string[]> => {
-  const headers = createHeaders()
-  const body = createRequestBody(prompt)
-
-  const response = await fetch(config.textToImageApiUrl ?? '', {
-    headers,
-    method: 'POST',
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    await handleErrorResponse(response)
-  }
-
-  const responseJSON: TextToImageResponseBody = await response.json()
-  return saveImages(responseJSON)
-}
-
+// This area is for autoreplying to mentions and replies aside from '/'-commands
 server.client.on('messageCreate', async (message: Message) => {
   const wasRepliedTo: boolean = message.mentions.has(server.client.user?.id ?? '')
   const doesMentionMyself: boolean = message.mentions.has(server.client.user?.toString() ?? '')
@@ -119,4 +67,4 @@ server.client.on('messageCreate', async (message: Message) => {
   }
 })
 
-server.client.login(config.token) // Replace with your bot token
+server.client.login(config.token)
