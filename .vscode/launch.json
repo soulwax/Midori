@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/app.js"
+            "program": "${workspaceFolder}/dist/app.js"
         },
         // nodemon
         {
@@ -19,13 +19,35 @@
             "request": "launch",
             "name": "nodemon",
             "runtimeExecutable": "nodemon",
-            "program": "${workspaceFolder}/src/app.js",
+            "program": "${workspaceFolder}/src/app.ts",
             "restart": true,
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
+            "env": {
+                "debug": "app:*",
+            }
+        },
+        {
+            "name": "Attach",
+            "port": 9331,
+            "request": "attach",
             "skipFiles": [
                 "<node_internals>/**"
-            ]
+            ],
+            "type": "node"
+        },
+        {
+            "name": "Launch via NPM",
+            "request": "launch",
+            "args": [
+                "run",
+                "dev"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
         }
     ]
 }
