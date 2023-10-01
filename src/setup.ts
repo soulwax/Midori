@@ -1,6 +1,7 @@
-const { Client } = require(`discord.js`);
-const { REST } = require("@discordjs/rest");
-require(`dotenv`).config();
+import { Client } from 'discord.js';
+import { REST } from '@discordjs/rest';
+import dotenv from 'dotenv';
+dotenv.config();
 const TOKEN = process.env.DISCORD_TOKEN;
 
 //#region Intents
@@ -30,7 +31,7 @@ const intents = Object.values(IntentBits).reduce((a, b) => a | b, 0);
 //#endregion
 
 //#region REST + CLIENT API + INTENTS
-const rest = new REST({ version: "10" }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(TOKEN ?? '');
 
 const client = new Client({
   intents: intents,
@@ -38,7 +39,7 @@ const client = new Client({
 
 //#endregion
 
-module.exports = {
+export default {
   client: client,
   rest: rest,
 };
