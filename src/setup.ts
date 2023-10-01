@@ -15,11 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Client } from 'discord.js';
-import { REST } from '@discordjs/rest';
-import dotenv from 'dotenv';
-dotenv.config();
-const TOKEN = process.env.DISCORD_TOKEN;
+import { Client } from 'discord.js'
+import { REST } from '@discordjs/rest'
+import config from './config'
+const TOKEN = config.token
 
 //#region Intents
 const IntentBits = {
@@ -42,21 +41,21 @@ const IntentBits = {
   GUILD_SCHEDULED_EVENTS: 1 << 16,
   AUTO_MODERATION_CONFIGURATION: 1 << 20,
   AUTO_MODERATION_EXECUTION: 1 << 21,
-};
+}
 
-const intents = Object.values(IntentBits).reduce((a, b) => a | b, 0);
+const intents = Object.values(IntentBits).reduce((a, b) => a | b, 0)
 //#endregion
 
 //#region REST + CLIENT API + INTENTS
-const rest = new REST({ version: '10' }).setToken(TOKEN ?? '');
+const rest = new REST({ version: '10' }).setToken(TOKEN ?? '')
 
 const client = new Client({
   intents: intents,
-});
+})
 
 //#endregion
 
 export default {
   client: client,
   rest: rest,
-};
+}

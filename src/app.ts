@@ -19,92 +19,80 @@ import config from './config'
 import fs from 'fs'
 import server from './setup'
 import { AttachmentBuilder, Message } from 'discord.js'
-import dotenv from 'dotenv'
 import { TextToImageRequestBody, TextToImageResponseBody } from './types'
-dotenv.config()
 
 server.client.once('ready', async () => {
   console.log(`Logged in as ${server.client.user?.tag}!`)
-
-  // Code from deployed.js
-  // const guilds = await server.client.guilds.fetch();
-  // const firstGuild = guilds.first();
-  // if (firstGuild) {
-  //   const guild = firstGuild as unknown as Discord.Guild;
-  //   const channels = await guild.channels.fetch();
-  //   const generalChannel: TextChannel = channels.find(
-  //     (channel) => channel?.id === 'process.env.GENERAL_CHANNEL_ID',
-  //   ) as TextChannel;
-  //   // if (generalChannel) {
-  //   //   await generalChannel.send(
-  //   //     [
-  //   //       `Hey there! Thanks for installing this Discord bot.`,
-  //   //       `Try mentioning me in a message like this: <@!${server.client.user?.id}>`,
-  //   //       '',
-  //   //       `You can support our codebase here:`,
-  //   //       `https://github.com/soulwax/Midoridan`,
-  //   //     ].join('\n'),
-  //   //   );
-  //   // }
-  // }
+  // List all guilds
+  console.log('Guilds:')
+  server.client.guilds.cache.forEach((guild) => {
+    console.log(` - ${guild.name}`)
+  })
 })
 
-const STABLE_DIFFUSION_API_KEY = process.env.STABLE_DIFFUSION_API_KEY
+const createHeaders = () => ({
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${config.stableDiffusionApiKey}`,
+})
 
-export const textToImage = async (prompt: string): Promise<string[]> => {
-  const path = 'https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/text-to-image'
+const createRequestBody = (prompt: string): TextToImageRequestBody => ({
+  steps: 40,
+  width: 512,
+  height: 512,
+  seed: 0,
+  cfg_scale: 5,
+  samples: 1,
+  text_prompts: [
+    {
+      text: prompt,
+      weight: 1,
+    },
+    {
+      text: 'blurry, bad',
+      weight: -1,
+    },
+  ],
+})
 
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${STABLE_DIFFUSION_API_KEY}`,
-  }
+const handleErrorResponse = async (response: Response) => {
+  const errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\``
+  console.log(errorMessage)
+  throw new Error(errorMessage)
+}
 
-  const body: TextToImageRequestBody = {
-    steps: 40,
-    width: 512,
-    height: 512,
-    seed: 0,
-    cfg_scale: 5,
-    samples: 1,
-    text_prompts: [
-      {
-        text: prompt,
-        weight: 1,
-      },
-      {
-        text: 'blurry, bad',
-        weight: -1,
-      },
-    ],
-  }
-
-  const response: Promise<Response> = fetch(path, {
-    headers,
-    method: 'POST',
-    body: JSON.stringify(body),
-  })
-
-  if ((await response).ok === false) {
-    throw new Error('Failed to generate image.')
-  }
-
-  const responseJSON: TextToImageResponseBody = await (await response).json()
-
+const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
   const paths: string[] = []
   responseJSON.artifacts.forEach((image: { seed: number; base64: string }) => {
     const path = `./images/out/txt2img_${image.seed}.png`
     paths.push(path)
     fs.writeFileSync(path, Buffer.from(image.base64, 'base64'))
   })
-
   return paths
+}
+
+const textToImage = async (prompt: string): Promise<string[]> => {
+  const headers = createHeaders()
+  const body = createRequestBody(prompt)
+
+  const response = await fetch(config.textToImageApiUrl ?? '', {
+    headers,
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    await handleErrorResponse(response)
+  }
+
+  const responseJSON: TextToImageResponseBody = await response.json()
+  return saveImages(responseJSON)
 }
 
 server.client.on('messageCreate', async (message: Message) => {
   const wasRepliedTo: boolean = message.mentions.has(server.client.user?.id ?? '')
-  const doesMentionMyself: boolean  = message.mentions.has(server.client.user?.toString() ?? '')
-  const prompt = message.content.replace(/<@\d+> ?/g, "")
+  const doesMentionMyself: boolean = message.mentions.has(server.client.user?.toString() ?? '')
+  const prompt = message.content.replace(/<@\d+> ?/g, '')
   if (message.content.startsWith('hey')) {
     await message.reply(
       [
@@ -118,13 +106,15 @@ server.client.on('messageCreate', async (message: Message) => {
   }
   if (doesMentionMyself || wasRepliedTo) {
     try {
-      await message.reply(`Generating image for ${message.author.displayName}: \`${prompt}\`...`)
+      const firstPost = `Generating image for ${message.author.displayName}: \`${prompt}\`...`
+      console.log(firstPost)
+      await message.reply(`${firstPost}`)
       const imagePaths = await textToImage(prompt)
       const attachment = new AttachmentBuilder(imagePaths[0])
       await message.reply({ files: [attachment] })
     } catch (error) {
       console.error('Error generating image:', error)
-      await message.reply(`Sorry, I encountered an error while generating the image. Reason: ${error}`)
+      await message.reply(`Sorry, I encountered an error while generating the image.\n${error}`)
     }
   }
 })
