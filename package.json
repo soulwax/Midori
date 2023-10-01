@@ -5,9 +5,9 @@
   "main": "src/app.js",
   "private": true,
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "pm2": "pm2 start src/app.js --name midoridan",
+    "start": "node dist/app.js",
+    "dev": "nodemon --inspect=0.0.0.0:9331 --exec 'ts-node src/app.ts --watch src'",
+    "pm2": "pm2 start dist/app.js --name midoridan",
     "lint": "eslint"
   },
   "repository": {
@@ -28,13 +28,15 @@
     "axios": "^1.5.0",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
-    "node-html-parser": "^6.1.10"
+    "node-html-parser": "^6.1.10",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.8.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "eslint": "^8.50.0",
+    "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
