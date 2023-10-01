@@ -25,7 +25,7 @@ export default {
   clientSecret: process.env.DISCORD_CLIENT_SECRET,
   stableDiffusionApiKey: process.env.STABLE_DIFFUSION_API_KEY,
   textToImageApiUrl: process.env.TEXT_TO_IMAGE_API_URL,
-  imageToTextApiUrl: process.env.IMAGE_TO_TEXT_API_URL,
+  imageToImageApiUrl: process.env.IMAGE_TO_IMAGE_API_URL,
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
