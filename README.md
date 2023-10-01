@@ -76,8 +76,8 @@ You should be good to go. Further details on the configuration can be found in t
 
 ## Prerequisites
 
-- Node.js (version x.x.x or higher)
-- npm (version x.x.x or higher)
+- Node.js (version 18.18.x or higher)
+- npm (version 9.8.0 or higher)
 
 ## Installation
 
