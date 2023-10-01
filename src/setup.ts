@@ -14,9 +14,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-import { Client } from 'discord.js'
+import fs from 'fs'
+import { Command, ClientWithCommands } from './types'
+import { Client, Collection } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { REST } from '@discordjs/rest'
+import { Routes } from 'discord-api-types/v10'
+import path from 'path'
 import config from './config'
 const TOKEN = config.token
 
@@ -46,11 +50,72 @@ const IntentBits = {
 const intents = Object.values(IntentBits).reduce((a, b) => a | b, 0)
 //#endregion
 
-//#region REST + CLIENT API + INTENTS
+//#region REST + CLIENT API + INTENTS + COMMANDS
 const rest = new REST({ version: '10' }).setToken(TOKEN ?? '')
 
 const client = new Client({
   intents: intents,
+}) as ClientWithCommands
+client.setMaxListeners(15)
+client.commands = new Collection()
+
+const commandFiles = fs.readdirSync(path.join(__dirname, './commands')).filter((file) => file.endsWith('.ts'))
+
+for (const file of commandFiles) {
+  import(path.join(__dirname, `./commands/${file}`)).then((commandModule) => {
+    const command = {
+      name: commandModule.name,
+      description: commandModule.description,
+      execute: commandModule.execute,
+    }
+    client.commands.set(command.name, command)
+  })
+}
+
+const commands = [
+  new SlashCommandBuilder()
+    .setName('diffuse')
+    .setDescription('This command will generate an image from a prompt and reply with the result.')
+    .addStringOption((option) =>
+      option.setName('prompt').setDescription('The text prompt for image generation.').setRequired(true),
+    ),
+  new SlashCommandBuilder().setName('help').setDescription('Lists all available commands.'),
+]
+
+;(async () => {
+  try {
+    console.log(`Started refreshing application (/) commands.`)
+
+    await rest.put(Routes.applicationCommands(config.clientId ?? ''), {
+      body: commands,
+    })
+
+    console.log(`Successfully reloaded application (/) commands.`)
+  } catch (error) {
+    console.error(error)
+  }
+})()
+
+//#endregion
+
+//#region command handling
+// Add this block to handle the interactionCreate event
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return
+
+  const { commandName } = interaction
+
+  if (commandName === 'diffuse') {
+    const cmd = client.commands.get('diffuse') as Command
+    if (cmd) {
+      cmd.execute(interaction)
+    }
+  } else if (commandName === 'help') {
+    const cmd = client.commands.get('help') as Command
+    if (cmd) {
+      cmd.execute(interaction)
+    }
+  }
 })
 
 //#endregion
@@ -58,4 +123,5 @@ const client = new Client({
 export default {
   client: client,
   rest: rest,
+  commands: commands,
 }
