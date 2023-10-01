@@ -1,32 +1,67 @@
 # Midoridan
 
+![GitHub license](https://img.shields.io/github/license/soulwax/Midoridan)
+![GitHub stars](https://img.shields.io/github/stars/soulwax/Midoridan)
+![GitHub issues](https://img.shields.io/github/issues/soulwax/Midoridan)
+![GitHub forks](https://img.shields.io/github/forks/soulwax/Midoridan)
+![Node.js Version](https://img.shields.io/node/v/discord.js)
+![TypeScript Version](https://img.shields.io/npm/types/typescript)
+
 ## Overview
 
 Midoridan is a Discord bot developed using TypeScript and Discord.js. Currently, the bot offers a greeting message and can send messages to the Stable Diffusion API when prompted. The primary functionality includes generating and posting images to Discord.
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Code Structure](#code-structure)
-- [Coding Standards](#coding-standards)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
+- [Midoridan](#midoridan)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Environment Variables](#environment-variables)
+  - [Features](#features)
   - [Commands](#commands)
-- [Configuration](#configuration)
-- [Development](#development)
-  - [Linting](#linting)
-  - [Formatting](#formatting)
-  - [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
+  - [Code Structure](#code-structure)
+  - [Coding Standards](#coding-standards)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Commands](#commands-1)
+  - [Configuration](#configuration)
+  - [Development](#development)
+    - [Typescript Watch, Debugging and Linting](#typescript-watch-debugging-and-linting)
+    - [Formatting](#formatting)
+    - [Testing](#testing)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+## Requirements
+
+- Node.js
+- TypeScript
+
+## Environment Variables
+
+You'll need to set up some environment variables for the bot to work correctly. An example `.env-sample` file is provided in the repository.
+
+1. Create a discord bot at the [Discord Developer Portal](https://discord.com/developers/applications).
+2. Create an account at [Stable Diffusion](https://platform.stability.ai/).
+3. Grab your Discord client ID and secret and your bot token and add them to the `.env` file.
+4. Grab your Stable Diffusion API key and add it to the `.env` file.
+5. Adjust the links if needed (e.g. if you want to use a different API version) but as of October 2023, the links are very up to date.
+
+You should be good to go. Further details on the configuration can be found in the [Configuration](#configuration) section.
 
 ## Features
 
-- **Message Diffusion**: Utilizes the Stable Diffusion API to send messages.
-- **Automated Responses**: Automatically responds to specific triggers in Discord messages.
-- **Customizable**: Configurable via environment variables (see [Configuration](#configuration)).
+- **Diffuse**: A feature that allows you to generate images from text and post them to Discord using the Stable Diffusion API.
+- **Help**: Provides help documentation for the bot's commands.
+- **Setup**: Sets up the bot for your server.
+- **Utils**: Various utility functions to make life easier for the developer.
+
+## Commands
+
+- `/diffuse [options]`: Uses the Stable Diffusion API to convert text to an image and post it to the current channel.
+- `/help`: Shows the currently implemented functions.
 
 ## Code Structure
 
@@ -85,12 +120,18 @@ cp .env-sample .env
 ```
 
 2. Edit `.env` to include your specific configuration. The following environment variables can be set:
-  - `API_KEY`: Your API key for Stable Diffusion API.
-  - `DISCORD_TOKEN`: Your Discord bot token.
+
+- `DISCORD_CLIENT_ID`: Your Discord client ID.
+- `DISCORD_CLIENT_SECRET`: Your Discord client secret.
+- `DISCORD_TOKEN`: Your Discord bot token.
+- `STABLE_DIFFUSION_API_KEY`: Your API key for Stable Diffusion API.
+- `GENERAL_CHANNEL_ID`: Currently unused but one could limit the bot to post only there.
+- `TEXT_TO_IMAGE_API_URL`: The URL of the Stable Diffusion API for Text to Image.
+- `IMAGE_TO_IMAGE_API_URL`: The URL of the Stable Diffusion API for Image to Image.
 
 ## Development
 
-### Linting
+### Typescript Watch, Debugging and Linting
 
 This project uses ESLint for linting. To run the linter, execute:
 
@@ -98,21 +139,22 @@ This project uses ESLint for linting. To run the linter, execute:
 npm run lint
 ```
 
+During development, you should run `npm run watch` to compile on the fly while you're working on the code.
+
+Provided the correct use of the .vscode/launch.json file, you can debug the code and react to changes immediately while watching is running, without having to restart the bot all the time. This is especially useful when working on the bot's commands.
+
 ### Formatting
 
 This project uses Prettier for code formatting. To format the code, execute:
-
-```bash
-npm run format
-```
+Current rules can be seen in the [.prettierrc](.prettierrc) file.
 
 ### Testing
 
-(Include any testing procedures if applicable)
+The project is currently tested manually. Automated testing will be implemented in the future. Pull requests are welcome.
 
 ## Contributing
 
-Feel free to open issues and pull requests. For major changes, please open an issue first to discuss what you would like to change.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
 
 ## License
 

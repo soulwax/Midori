@@ -1,15 +1,17 @@
 {
   "name": "midoridan",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/app.js",
+  "version": "1.1.0",
+  "description": "Midoridan is a Discord bot. Currently, the bot offers users the text to image functionality of the Stable Diffusion API when prompted. It supports slash commands. The primary functionality includes generating and posting images to Discord.",
+  "main": "src/app.ts",
   "private": true,
   "scripts": {
     "start": "node dist/app.js",
     "dev": "nodemon --inspect=0.0.0.0:9331 --exec 'ts-node src/app.ts --watch src --trace-warnings'",
+    "build": "tsc",
     "watch": "tsc -w",
     "pm2": "pm2 start dist/app.js --name=Midoridan --node-args=\"--inspect --inspect-port=9331\" --watch -f",
-    "lint": "eslint"
+    "lint": "eslint --ext .ts src",
+    "lint:fix": "eslint --fix --ext .ts src"
   },
   "repository": {
     "type": "git",
@@ -20,10 +22,13 @@
     "midoridan",
     "discord",
     "discord.js",
-    "discord bot"
+    "discord bot",
+    "image generation",
+    "image enhancement",
+    "image manipulation"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "github@soulwax",
+  "license": "LGPL-3.0-or-later",
   "dependencies": {
     "@discordjs/rest": "^2.0.1",
     "axios": "^1.5.0",
