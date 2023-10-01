@@ -1,11 +1,26 @@
-// initialize discord REST
+/*
+Copyright (C) 2023 github@soulwax
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 import config from './config'
-
+import fs from 'fs'
 import server from './setup'
-import axios from 'axios'
 import { AttachmentBuilder, Message } from 'discord.js'
 import dotenv from 'dotenv'
+import { TextToImageRequestBody, TextToImageResponseBody } from './types'
 dotenv.config()
 
 server.client.once('ready', async () => {
@@ -34,6 +49,58 @@ server.client.once('ready', async () => {
   // }
 })
 
+const STABLE_DIFFUSION_API_KEY = process.env.STABLE_DIFFUSION_API_KEY
+
+export const textToImage = async (prompt: string): Promise<string[]> => {
+  const path = 'https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/text-to-image'
+
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${STABLE_DIFFUSION_API_KEY}`,
+  }
+
+  const body: TextToImageRequestBody = {
+    steps: 40,
+    width: 512,
+    height: 512,
+    seed: 0,
+    cfg_scale: 5,
+    samples: 1,
+    text_prompts: [
+      {
+        text: prompt,
+        weight: 1,
+      },
+      {
+        text: 'blurry, bad',
+        weight: -1,
+      },
+    ],
+  }
+
+  const response: Promise<Response> = fetch(path, {
+    headers,
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+
+  if ((await response).ok === false) {
+    throw new Error('Failed to generate image.')
+  }
+
+  const responseJSON: TextToImageResponseBody = await (await response).json()
+
+  const paths: string[] = []
+  responseJSON.artifacts.forEach((image: { seed: number; base64: string }) => {
+    const path = `./images/out/txt2img_${image.seed}.png`
+    paths.push(path)
+    fs.writeFileSync(path, Buffer.from(image.base64, 'base64'))
+  })
+
+  return paths
+}
+
 server.client.on('messageCreate', async (message: Message) => {
   const wasMentioned: boolean = message.mentions.has(server.client.user?.id ?? '')
   console.log(`wasMentioned: ${wasMentioned}`)
@@ -50,21 +117,12 @@ server.client.on('messageCreate', async (message: Message) => {
   }
   if (message.mentions.has(server.client.user?.toString() ?? '') || wasMentioned) {
     try {
-      const response = await axios.get('https://dreamstudio.ai/api/endpoint', {
-        responseType: 'arraybuffer', // To handle binary data
-      })
-      // Convert the binary data to a Discord attachment
-      const attachment = new AttachmentBuilder(response.data, { name: 'image.png' }) // Assuming the image is a PNG, adjust the filename accordingly
-      console.log(`=== data from dreamstudio.ai ===`)
-      console.dir(response.data)
-      // Send the image to the channel, mentioning the user and reiterating their prompt
-      await message.channel.send({
-        content: `<@${message.author.id}> Generated image for: "${message.content}"`,
-        files: [attachment],
-      })
+      const imagePaths = await textToImage(message.content)
+      const attachment = new AttachmentBuilder(imagePaths[0])
+      await message.reply({ files: [attachment] })
     } catch (error) {
-      console.error('Error fetching image from dreamstudio.ai:', error)
-      await message.reply('Sorry, I encountered an error while fetching the image.')
+      console.error('Error generating image:', error)
+      await message.reply('Sorry, I encountered an error while generating the image.')
     }
   }
 })
