@@ -20,12 +20,13 @@ dotenv.config();
 import { GatewayIntentBits } from 'discord.js';
 
 export default {
-  token: process.env.DISCORD_TOKEN,
-  clientId: process.env.DISCORD_CLIENT_ID,
-  clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  stableDiffusionApiKey: process.env.STABLE_DIFFUSION_API_KEY,
-  textToImageApiUrl: process.env.TEXT_TO_IMAGE_API_URL,
-  imageToImageApiUrl: process.env.IMAGE_TO_IMAGE_API_URL,
+  token: process.env.DISCORD_TOKEN as string,
+  verbose: (process.env.VERBOSE === 'true') as boolean,
+  clientId: process.env.DISCORD_CLIENT_ID as string,
+  clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+  stableDiffusionApiKey: process.env.STABLE_DIFFUSION_API_KEY as string,
+  textToImageApiUrl: process.env.TEXT_TO_IMAGE_API_URL as string,
+  imageToImageApiUrl: process.env.IMAGE_TO_IMAGE_API_URL as string,
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -46,5 +47,5 @@ export default {
     GatewayIntentBits.AutoModerationConfiguration,
     GatewayIntentBits.AutoModerationExecution,
     GatewayIntentBits.GuildModeration,
-  ],
+  ] as GatewayIntentBits[],
 };
