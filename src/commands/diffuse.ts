@@ -17,8 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // src/commands/diffuse.js
 // Import required modules and types
+import config from '../config'
 import { AttachmentBuilder, CommandInteraction } from 'discord.js'
 import { textToImage } from '../utils'
+const VERBOSE = config.verbose
 
 // Define your command
 export const name = 'diffuse'
@@ -31,7 +33,10 @@ export const execute = async (interaction: CommandInteraction) => {
   const member = interaction.member?.toString() as string
   // Check for mentions and replies
   const firstPost = `Generating image for ${member}: \`${prompt.value}\`...`
-
+  if (VERBOSE) {
+    console.log(`/${name} ${promptText} was executed by ${member} in #${interaction.channel?.url}`)
+  }
+  
   await interaction.reply(firstPost)
   const paths = await textToImage(promptText)
   const attachment = new AttachmentBuilder(paths[0])

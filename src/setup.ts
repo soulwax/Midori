@@ -23,6 +23,7 @@ import { Routes } from 'discord-api-types/v10'
 import path from 'path'
 import config from './config'
 const TOKEN = config.token
+const VERBOSE = config.verbose
 
 //#region Intents
 const IntentBits = {
@@ -62,13 +63,17 @@ client.commands = new Collection()
 const commandFiles = fs.readdirSync(path.join(__dirname, './commands')).filter((file) => file.endsWith('.ts'))
 
 for (const file of commandFiles) {
+  if (VERBOSE) console.log(`Loading command ${file}... :`)
   import(path.join(__dirname, `./commands/${file}`)).then((commandModule) => {
+    
     const command = {
       name: commandModule.name,
       description: commandModule.description,
       execute: commandModule.execute,
     }
+    if (VERBOSE) console.dir(command)
     client.commands.set(command.name, command)
+    if (VERBOSE) console.log(`Loaded command ${command.name}.`)
   })
 }
 

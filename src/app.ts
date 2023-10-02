@@ -21,6 +21,7 @@ import server from './setup'
 import { AttachmentBuilder, Message } from 'discord.js'
 import { Command } from './types'
 
+const VERBOSE = config.verbose
 
 server.client.once('ready', async () => {
   console.log(`Logged in as ${server.client.user?.tag}!`)
@@ -55,7 +56,7 @@ server.client.on('messageCreate', async (message: Message) => {
   if (doesMentionMyself || wasRepliedTo) {
     try {
       const firstPost = `Generating image for ${message.author.displayName}: \`${prompt}\`...`
-      console.log(firstPost)
+      if (VERBOSE) console.log(firstPost)
       await message.reply(`${firstPost}`)
       const imagePaths = await textToImage(prompt)
       const attachment = new AttachmentBuilder(imagePaths[0])
