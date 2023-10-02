@@ -36,9 +36,17 @@ export const execute = async (interaction: CommandInteraction) => {
   if (VERBOSE) {
     console.log(`/${name} ${promptText} was executed by ${member} in #${interaction.channel?.url}`)
   }
-  
-  await interaction.reply(firstPost)
-  const paths = await textToImage({prompt: promptText, stylePreset: 'anime', negativePrompt: 'blurry face, ugly face'})
-  const attachment = new AttachmentBuilder(paths[0])
-  await interaction.followUp({ files: [attachment] })
+  try {
+    await interaction.reply(firstPost)
+    const paths = await textToImage({
+      prompt: promptText,
+      stylePreset: 'anime',
+      negativePrompt: 'blurry face, ugly face',
+    })
+    const attachment = new AttachmentBuilder(paths[0])
+    await interaction.followUp({ files: [attachment] })
+  } catch (error) {
+    console.error(error)
+    await interaction.followUp(`Something went wrong: ${error}`)
+  }
 }

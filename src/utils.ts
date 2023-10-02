@@ -39,7 +39,7 @@ export const createRequestBody = ({
   negativePrompt = 'blurry, bad',
   stylePreset,
 }: RequestBodyOptions): TextToImageRequestBody => ({
-  steps: 40,
+  steps: 30,
   width: 512,
   height: 512,
   seed: 0,

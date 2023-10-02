@@ -125,6 +125,11 @@ client.on('interactionCreate', async (interaction) => {
     if (cmd) {
       cmd.execute(interaction)
     }
+  } else if (commandName === 'anime') {
+    const cmd = client.commands.get('anime') as Command
+    if (cmd) {
+      cmd.execute(interaction)
+    }
   }
 })
 
