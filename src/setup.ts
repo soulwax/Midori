@@ -65,7 +65,6 @@ const commandFiles = fs.readdirSync(path.join(__dirname, './commands')).filter((
 for (const file of commandFiles) {
   if (VERBOSE) console.log(`Loading command ${file}... :`)
   import(path.join(__dirname, `./commands/${file}`)).then((commandModule) => {
-    
     const command = {
       name: commandModule.name,
       description: commandModule.description,
@@ -83,6 +82,12 @@ const commands = [
     .setDescription('This command will generate an image from a prompt and reply with the result.')
     .addStringOption((option) =>
       option.setName('prompt').setDescription('The text prompt for image generation.').setRequired(true),
+    ),
+  new SlashCommandBuilder()
+    .setName('anime')
+    .setDescription('This command will generate an anime image from a prompt and reply with the result.')
+    .addStringOption((option) =>
+      option.setName('prompt').setDescription('The text prompt for anime image generation.').setRequired(true),
     ),
   new SlashCommandBuilder().setName('help').setDescription('Lists all available commands.'),
 ]

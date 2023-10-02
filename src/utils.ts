@@ -21,13 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Suppresses it for now.
 // Full warning output:
 // - ExperimentalWarning: buffer.File is an experimental feature and might change at any time
-const originalEmitWarning = process.emitWarning;
+const originalEmitWarning = process.emitWarning
 process.emitWarning = function (warning: string | Error, options?: undefined) {
-    if (typeof warning === 'string' && warning.includes('ExperimentalWarning')) {
-        return;
-    }
-    return originalEmitWarning.apply(this, [warning, options]);
-};
+  if (typeof warning === 'string' && warning.includes('ExperimentalWarning')) {
+    return
+  }
+  return originalEmitWarning.apply(this, [warning, options])
+}
 
 import fs from 'fs'
 import config from './config'
@@ -82,9 +82,13 @@ export const createHeaders = () => ({
   Authorization: `Bearer ${config.stableDiffusionApiKey}`,
 })
 
-export const textToImage = async (prompt: string): Promise<string[]> => {
+export const textToImage = async ({
+  prompt,
+  negativePrompt = 'blurry, bad',
+  stylePreset,
+}: RequestBodyOptions): Promise<string[]> => {
   const headers = createHeaders()
-  const body = createRequestBody({ prompt })
+  const body = createRequestBody({ prompt, negativePrompt, stylePreset })
 
   if (VERBOSE) {
     console.log('Request headers:')

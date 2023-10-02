@@ -58,7 +58,7 @@ server.client.on('messageCreate', async (message: Message) => {
       const firstPost = `Generating image for ${message.author.displayName}: \`${prompt}\`...`
       if (VERBOSE) console.log(firstPost)
       await message.reply(`${firstPost}`)
-      const imagePaths = await textToImage(prompt)
+      const imagePaths = await textToImage({prompt})
       const attachment = new AttachmentBuilder(imagePaths[0])
       await message.reply({ files: [attachment] })
     } catch (error) {

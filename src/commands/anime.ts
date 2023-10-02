@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// src/commands/diffuse.js
+// src/commands/anime.js
 // Import required modules and types
 import config from '../config'
 import { AttachmentBuilder, CommandInteraction } from 'discord.js'
@@ -23,8 +23,8 @@ import { textToImage } from '../utils'
 const VERBOSE = config.verbose
 
 // Define your command
-export const name = 'diffuse'
-export const description = 'This command will generate an image from a prompt and reply with the result.'
+export const name = 'anime'
+export const description = 'This command will generate an anime image from a prompt and reply with the result.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
@@ -38,7 +38,7 @@ export const execute = async (interaction: CommandInteraction) => {
   }
   
   await interaction.reply(firstPost)
-  const paths = await textToImage({prompt: promptText})
+  const paths = await textToImage({prompt: promptText, stylePreset: 'anime', negativePrompt: 'blurry face, ugly face'})
   const attachment = new AttachmentBuilder(paths[0])
   await interaction.followUp({ files: [attachment] })
 }
