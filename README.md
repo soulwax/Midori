@@ -25,7 +25,6 @@ Midoridan is a Discord bot developed using TypeScript and Discord.js. Currently,
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Usage](#usage)
-    - [Commands](#commands-1)
   - [Configuration](#configuration)
   - [Development](#development)
     - [Typescript Watch, Debugging and Linting](#typescript-watch-debugging-and-linting)
@@ -83,21 +82,21 @@ You should be good to go. Further details on the configuration can be found in t
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/soulwax/Midoridan.git
-```
+    ```bash
+    git clone https://github.com/soulwax/Midoridan.git
+    ```
 
 2. Navigate to the project directory:
 
-```bash
-cd Midoridan
-```
+    ```bash
+    cd Midoridan
+    ```
 
 3. Install dependencies:
 
-```bash
-npm install
-```
+    ```bash
+    npm install
+    ```
 
 ## Usage
 
@@ -107,17 +106,13 @@ To run the application, execute:
 npm start
 ```
 
-### Commands
-
-- `diffuse`: (Planned feature) This command will allow you to send a message to the Stable Diffusion API.
-
 ## Configuration
 
 1. Copy `.env-sample` to `.env`:
 
-```bash
-cp .env-sample .env
-```
+    ```bash
+    cp .env-sample .env
+    ```
 
 2. Edit `.env` to include your specific configuration. The following environment variables can be set:
 
