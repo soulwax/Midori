@@ -80,7 +80,7 @@ export const handleErrorResponse = async (response: Response) => {
   } else {
     additionalInfo = 'This error is strange, maybe there is an api update undergoing or the api is down.'
   }
-  errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\`\n{Bonus info: ${additionalInfo}}`
+  errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\`\nBonus info: \`${additionalInfo}\``
   console.error(errorMessage)
   throw new Error(errorMessage)
 }
