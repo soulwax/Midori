@@ -31,7 +31,7 @@ process.emitWarning = function (warning: string | Error, options?: undefined) {
 
 import fs from 'fs'
 import config from './config'
-import { TextToImageRequestBody, TextToImageResponseBody, RequestBodyOptions } from './types'
+import { RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
 const VERBOSE = config.verbose
 
 export const createRequestBody = ({
@@ -40,8 +40,8 @@ export const createRequestBody = ({
   stylePreset,
 }: RequestBodyOptions): TextToImageRequestBody => ({
   steps: 40,
-	width: 1024,
-	height: 1024,
+  width: 1024,
+  height: 1024,
   seed: 0,
   cfg_scale: 5,
   samples: 1,
@@ -71,7 +71,16 @@ export const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
 }
 
 export const handleErrorResponse = async (response: Response) => {
-  const errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\``
+  let errorMessage = ''
+  let additionalInfo = ''
+  if (response.status === 429 || response.status === 427) {
+    additionalInfo = 'You are being rate limited or the api is down (expired api key possible, contact admin).'
+  } else if (response.status === 400 || response.status === 404) {
+    additionalInfo = 'The request is probably malformed, try to reduce nudity or any nsfw content.'
+  } else {
+    additionalInfo = 'This error is strange, maybe there is an api update undergoing or the api is down.'
+  }
+  errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\`\n{Bonus info: ${additionalInfo}}`
   console.error(errorMessage)
   throw new Error(errorMessage)
 }

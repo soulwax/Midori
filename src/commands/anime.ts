@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // src/commands/anime.js
 // Import required modules and types
-import config from '../config'
 import { AttachmentBuilder, CommandInteraction } from 'discord.js'
+import config from '../config'
 import { textToImage } from '../utils'
 const VERBOSE = config.verbose
 
@@ -47,6 +47,10 @@ export const execute = async (interaction: CommandInteraction) => {
     await interaction.followUp({ files: [attachment] })
   } catch (error) {
     console.error(error)
-    await interaction.followUp(`Something went wrong: ${error}`)
+    try {
+      await interaction.followUp(`Something went wrong: ${error}`)
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
