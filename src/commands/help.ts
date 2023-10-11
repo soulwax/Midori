@@ -15,25 +15,36 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// src/commands/help.js
-import { ClientWithCommands, Command } from '../types'
+// src/commands/help.ts
 import { CommandInteraction } from 'discord.js'
+import { ClientWithCommands, Command } from '../types'
 
-
-// Define your command
+// Define the command
 export const name = 'help'
 export const description = 'Lists all available commands.'
 
 export const execute = async (interaction: CommandInteraction) => {
-  // Go through all commands and create a list of them, then format like this: 
+  // Go through all commands and create a list of them, then format like this:
   // Commands:
   // - command1 : description1
   // - command2 : description2
   // etc...
-  const commands = (interaction.client as ClientWithCommands).commands.map((command) => {
-    const cmd = command as Command
-    return `\t **${cmd.name}** : ${cmd.description}\n`
+  // Sort the commands so that 'help' comes last
+  const sortedCommands = (interaction.client as ClientWithCommands).commands.sort((a, b) => {
+    const cmdA = a as Command
+    const cmdB = b as Command
+
+    if (cmdA.name === 'help') return 1
+    if (cmdB.name === 'help') return -1
+    return cmdA.name.localeCompare(cmdB.name)
   })
+
+  // Map the sorted commands to their string representations
+  const commands = sortedCommands.map((command) => {
+    const cmd = command as Command
+    return `\t **/${cmd.name}** : ${cmd.description}\n`
+  })
+
   // Reply with the list
   await interaction.reply(`Available commands: \n-${commands.join('-')}`)
 }

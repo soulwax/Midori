@@ -33,7 +33,7 @@ export const execute = async (interaction: CommandInteraction) => {
   const promptText = prompt.value?.toString() as string
   const member = interaction.member?.toString() as string
   // Check for mentions and replies
-  const firstPost = `Generating image for ${member}: \`${prompt.value}\`...`
+  const firstPost = `Generic stable diffusion for ${member}: \`${prompt.value}\`...`
   if (VERBOSE) {
     console.log(`/${name} ${promptText} was executed by ${member} in #${interaction.channel?.url}`)
   }
