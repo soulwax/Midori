@@ -60,7 +60,7 @@ client.setMaxListeners(15)
 client.commands = new Collection()
 
 // Asynchronously load all command files and return them as an array of Commands
-async function loadCommands(): Promise<Command[]> {
+const loadCommands = async (): Promise<Command[]> => {
   const commandFiles = fs
     .readdirSync(path.join(__dirname, './commands'))
     .filter((file) => file.endsWith('.ts') || file.endsWith('.js'))
@@ -84,7 +84,7 @@ async function loadCommands(): Promise<Command[]> {
 }
 
 // Function to load commands and set up slash commands
-async function getBuiltCommands(): Promise<Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[]> {
+const getBuiltCommands = async (): Promise<Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[]> => {
   const commandArray = await loadCommands()
   const commands: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[] = []
 
@@ -106,7 +106,7 @@ async function getBuiltCommands(): Promise<Omit<SlashCommandBuilder, 'addSubcomm
 }
 
 // Main function to refresh application commands
-async function refreshApplicationCommands() {
+const refreshApplicationCommands = async () => {
   try {
     console.log(`Started refreshing application (/) commands.`)
     const commandsToRegisterWithDiscord = await getBuiltCommands()
