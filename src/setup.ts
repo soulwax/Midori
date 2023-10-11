@@ -68,11 +68,12 @@ async function loadCommands(): Promise<Command[]> {
   const commandPromises = commandFiles.map(async (file) => {
     if (VERBOSE) console.log(`Loading command ${file}... :`)
     const commandModule = await import(path.join(__dirname, `./commands/${file}`))
-    const command = {
+    const command: Command = {
+      ...commandModule,
       name: commandModule.name,
       description: commandModule.description,
       execute: commandModule.execute,
-    } as Command
+    }
     if (VERBOSE) console.dir(command)
     client.commands.set(command.name, command)
     if (VERBOSE) console.log(`Loaded command ${command.name}.`)
@@ -89,6 +90,7 @@ async function getBuiltCommands(): Promise<Omit<SlashCommandBuilder, 'addSubcomm
 
   commandArray.forEach((element) => {
     let newCommand: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+    // Assuming for now that every command has a prompt option except for /help
     if (element.name === 'help') {
       newCommand = new SlashCommandBuilder().setName(element.name).setDescription(element.description)
     } else {
@@ -107,9 +109,9 @@ async function getBuiltCommands(): Promise<Omit<SlashCommandBuilder, 'addSubcomm
 async function refreshApplicationCommands() {
   try {
     console.log(`Started refreshing application (/) commands.`)
-    const commandPatterns = await getBuiltCommands()
+    const commandsToRegisterWithDiscord = await getBuiltCommands()
     await rest.put(Routes.applicationCommands(config.clientId ?? ''), {
-      body: commandPatterns,
+      body: commandsToRegisterWithDiscord,
     })
     console.log(`Successfully reloaded application (/) commands.`)
   } catch (error) {
@@ -117,9 +119,8 @@ async function refreshApplicationCommands() {
   }
 }
 
-// Call the main function
+// Register commands by sending them over to discord
 refreshApplicationCommands()
-
 //#endregion
 
 //#region command handling
