@@ -14,14 +14,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-import fs from 'fs'
-import { Command, ClientWithCommands } from './types'
-import { Client, Collection } from 'discord.js'
-import { SlashCommandBuilder } from '@discordjs/builders'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
+import { Client, Collection, SlashCommandBuilder } from 'discord.js'
+import fs from 'fs'
 import path from 'path'
 import config from './config'
+import { ClientWithCommands, Command } from './types'
 const TOKEN = config.token
 const VERBOSE = config.verbose
 
@@ -60,53 +59,66 @@ const client = new Client({
 client.setMaxListeners(15)
 client.commands = new Collection()
 
-const commandFiles = fs
-  .readdirSync(path.join(__dirname, './commands'))
-  .filter((file) => file.endsWith('.ts') || file.endsWith('.js'))
+// Asynchronously load all command files and return them as an array of Commands
+async function loadCommands(): Promise<Command[]> {
+  const commandFiles = fs
+    .readdirSync(path.join(__dirname, './commands'))
+    .filter((file) => file.endsWith('.ts') || file.endsWith('.js'))
 
-for (const file of commandFiles) {
-  if (VERBOSE) console.log(`Loading command ${file}... :`)
-  import(path.join(__dirname, `./commands/${file}`)).then((commandModule) => {
+  const commandPromises = commandFiles.map(async (file) => {
+    if (VERBOSE) console.log(`Loading command ${file}... :`)
+    const commandModule = await import(path.join(__dirname, `./commands/${file}`))
     const command = {
       name: commandModule.name,
       description: commandModule.description,
       execute: commandModule.execute,
-    }
+    } as Command
     if (VERBOSE) console.dir(command)
     client.commands.set(command.name, command)
     if (VERBOSE) console.log(`Loaded command ${command.name}.`)
+    return command
   })
+
+  return Promise.all(commandPromises)
 }
 
-const commands = [
-  new SlashCommandBuilder()
-    .setName('diffuse')
-    .setDescription('This command will generate an image from a prompt and reply with the result.')
-    .addStringOption((option) =>
-      option.setName('prompt').setDescription('The text prompt for image generation.').setRequired(true),
-    ),
-  new SlashCommandBuilder()
-    .setName('anime')
-    .setDescription('This command will generate an anime image from a prompt and reply with the result.')
-    .addStringOption((option) =>
-      option.setName('prompt').setDescription('The text prompt for anime image generation.').setRequired(true),
-    ),
-  new SlashCommandBuilder().setName('help').setDescription('Lists all available commands.'),
-]
+// Function to load commands and set up slash commands
+async function getBuiltCommands(): Promise<Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[]> {
+  const commandArray = await loadCommands()
+  const commands: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[] = []
 
-;(async () => {
+  commandArray.forEach((element) => {
+    let newCommand: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+    if (element.name === 'help') {
+      newCommand = new SlashCommandBuilder().setName(element.name).setDescription(element.description)
+    } else {
+      newCommand = new SlashCommandBuilder()
+        .setName(element.name)
+        .setDescription(element.description)
+        .addStringOption((option) => option.setName('prompt').setDescription(element.description).setRequired(true))
+    }
+    commands.push(newCommand)
+  })
+
+  return commands
+}
+
+// Main function to refresh application commands
+async function refreshApplicationCommands() {
   try {
     console.log(`Started refreshing application (/) commands.`)
-
+    const commandPatterns = await getBuiltCommands()
     await rest.put(Routes.applicationCommands(config.clientId ?? ''), {
-      body: commands,
+      body: commandPatterns,
     })
-
     console.log(`Successfully reloaded application (/) commands.`)
   } catch (error) {
     console.error(error)
   }
-})()
+}
+
+// Call the main function
+refreshApplicationCommands()
 
 //#endregion
 
@@ -132,6 +144,11 @@ client.on('interactionCreate', async (interaction) => {
     if (cmd) {
       cmd.execute(interaction)
     }
+  } else if (commandName === 'digitalart') {
+    const cmd = client.commands.get('digitalart') as Command
+    if (cmd) {
+      cmd.execute(interaction)
+    }
   }
 })
 
@@ -140,5 +157,4 @@ client.on('interactionCreate', async (interaction) => {
 export default {
   client: client,
   rest: rest,
-  commands: commands,
 }
