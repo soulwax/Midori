@@ -30,6 +30,7 @@ process.emitWarning = function (warning: string | Error, options?: undefined) {
 }
 
 import fs from 'fs'
+import path from 'path'
 import config from './config'
 import { RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
 const VERBOSE = config.verbose
@@ -61,12 +62,20 @@ export const createRequestBody = ({
 export const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
   const paths: string[] = []
   console.log('Saving images...')
+  const outputFolder = './images/out'
+
+  // Create the directory if it doesn't exist
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true })
+  }
+
   responseJSON.artifacts.forEach((image: { seed: number; base64: string }) => {
-    const path = `./images/out/txt2img_${image.seed}.png`
-    paths.push(path)
-    fs.writeFileSync(path, Buffer.from(image.base64, 'base64'))
-    if (VERBOSE) console.log(`Saved image to ${path}`)
+    const filePath = path.join(outputFolder, `txt2img_${image.seed}.png`)
+    paths.push(filePath)
+    fs.writeFileSync(filePath, Buffer.from(image.base64, 'base64'))
+    if (VERBOSE) console.log(`Saved image to ${filePath}`)
   })
+
   return paths
 }
 
