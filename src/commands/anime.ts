@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// src/commands/anime.js
+// src/commands/anime.ts
 // Import required modules and types
 import { AttachmentBuilder, CommandInteraction } from 'discord.js'
 import config from '../config'
 import { textToImage } from '../utils'
 const VERBOSE = config.verbose
 
-// Define your command
+// Define the command
 export const name = 'anime'
 export const description = 'This command will generate an anime image from a prompt and reply with the result.'
 
