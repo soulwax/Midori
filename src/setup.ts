@@ -126,30 +126,20 @@ refreshApplicationCommands()
 //#region command handling
 // Add this block to handle the interactionCreate event
 client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isCommand()) return
+  // if the interaction is not a command or if it was initiated by another bot, return
+  if (!interaction.isCommand() || interaction.user.bot) return
 
   const { commandName } = interaction
 
-  if (commandName === 'diffuse') {
-    const cmd = client.commands.get('diffuse') as Command
-    if (cmd) {
-      cmd.execute(interaction)
-    }
-  } else if (commandName === 'help') {
-    const cmd = client.commands.get('help') as Command
-    if (cmd) {
-      cmd.execute(interaction)
-    }
-  } else if (commandName === 'anime') {
-    const cmd = client.commands.get('anime') as Command
-    if (cmd) {
-      cmd.execute(interaction)
-    }
-  } else if (commandName === 'digitalart') {
-    const cmd = client.commands.get('digitalart') as Command
-    if (cmd) {
-      cmd.execute(interaction)
-    }
+  // Retrieve the command from the Collection by its name
+  const cmd = client.commands.get(commandName) as Command
+
+  // If the command exists, execute it
+  if (cmd) {
+    cmd.execute(interaction)
+  } else {
+    // Optional: Send a message if the command does not exist
+    await interaction.reply(`Unknown command: ${commandName}`)
   }
 })
 
