@@ -86,23 +86,17 @@ const loadCommands = async (): Promise<Command[]> => {
 // Function to load commands and set up slash commands
 const getBuiltCommands = async (): Promise<Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[]> => {
   const commandArray = await loadCommands()
-  const commands: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>[] = []
+  return commandArray.map((element) => {
+    const newCommand = new SlashCommandBuilder().setName(element.name).setDescription(element.description)
 
-  commandArray.forEach((element) => {
-    let newCommand: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
-    // Assuming for now that every command has a prompt option except for /help
-    if (element.name === 'help') {
-      newCommand = new SlashCommandBuilder().setName(element.name).setDescription(element.description)
-    } else {
-      newCommand = new SlashCommandBuilder()
-        .setName(element.name)
-        .setDescription(element.description)
-        .addStringOption((option) => option.setName('prompt').setDescription(element.description).setRequired(true))
+    if (element.name !== 'help') {
+      newCommand.addStringOption((option) =>
+        option.setName('prompt').setDescription(element.description).setRequired(true),
+      )
     }
-    commands.push(newCommand)
-  })
 
-  return commands
+    return newCommand
+  })
 }
 
 // Main function to refresh application commands
