@@ -5,15 +5,15 @@ import { textToImage } from './utils'
 
 const VERBOSE = config.verbose
 
-export const execute = async (interaction: CommandInteraction, options: RequestBodyOptions) => {
+export const execDiscord = async (interaction: CommandInteraction, options: RequestBodyOptions) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
-
+  const commandName = interaction.commandName // Get the command name
   const promptText = prompt.value?.toString() as string
   const member = interaction.member?.toString() as string
 
   const name = interaction.user.displayName
   // Check for mentions and replies
-  const firstPost = `Generating Anime Art for ${member}: \`${prompt.value}\`...`
+  const firstPost = `Executing ${commandName} for ${member}: \`${prompt.value}\`...`
   if (VERBOSE) {
     console.log(`/${name} ${promptText} was executed by ${member} in #${interaction.channel?.url}`)
   }

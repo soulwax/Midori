@@ -17,40 +17,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // src/commands/3dmodel.ts
 // Import required modules and types
-import { AttachmentBuilder, CommandInteraction } from 'discord.js'
-import config from '../config'
-import { textToImage } from '../utils'
-const VERBOSE = config.verbose
+import { CommandInteraction } from 'discord.js'
+import { execDiscord } from '../exec'
+import { RequestBodyOptions } from '../types'
 
-// Define the command
 export const name = '3dmodel'
 export const description = 'This command will generate 3d model art.'
 
 export const execute = async (interaction: CommandInteraction) => {
-  const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
-
-  const promptText = prompt.value?.toString() as string
-  const member = interaction.member?.toString() as string
-  // Check for mentions and replies
-  const firstPost = `Generating Photo for ${member}: \`${prompt.value}\`...`
-  if (VERBOSE) {
-    console.log(`/${name} ${promptText} was executed by ${member} in #${interaction.channel?.url}`)
+  const options: RequestBodyOptions = {
+    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
+    negativePrompt: 'blurry, bad, no textures',
+    stylePreset: '3d-model',
   }
-  try {
-    await interaction.reply(firstPost)
-    const paths = await textToImage({
-      prompt: promptText,
-      stylePreset: '3d-model',
-      negativePrompt: 'blurry, bad',
-    })
-    const attachment = new AttachmentBuilder(paths[0])
-    await interaction.followUp({ files: [attachment] })
-  } catch (error) {
-    console.error(error)
-    try {
-      await interaction.followUp(`Something went wrong: ${error}`)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  execDiscord(interaction, options)
 }
