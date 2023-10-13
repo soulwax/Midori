@@ -24,7 +24,7 @@ const VERBOSE = config.verbose
 
 // Define the command
 export const name = 'photographic'
-export const description = 'This command will generate a photorealistic image from a prompt and reply with the result.'
+export const description = 'This command will generate a photorealistic image.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option

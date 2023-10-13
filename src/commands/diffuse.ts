@@ -25,7 +25,8 @@ const VERBOSE = config.verbose
 
 // Define the command
 export const name = 'diffuse'
-export const description = 'This command will generate an image from a prompt and reply with the result.'
+export const description =
+  'This command will generate an image from a prompt. This is the base command with no presets.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option

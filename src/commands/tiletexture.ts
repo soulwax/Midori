@@ -24,7 +24,7 @@ const VERBOSE = config.verbose
 
 // Define the command
 export const name = 'tiletexture'
-export const description = 'This command will generate a tile texture from a prompt and reply with the result.'
+export const description = 'This command will generate a tile texture.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option

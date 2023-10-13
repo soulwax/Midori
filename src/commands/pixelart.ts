@@ -24,7 +24,7 @@ const VERBOSE = config.verbose
 
 // Define the command
 export const name = 'pixelart'
-export const description = 'This command will generate a pixel art image from a prompt and reply with the result.'
+export const description = 'This command will generate pixel art.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
