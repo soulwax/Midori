@@ -29,10 +29,12 @@ process.emitWarning = function (warning: string | Error, options?: undefined) {
   return originalEmitWarning.apply(this, [warning, options])
 }
 
+import FormData from 'form-data'
 import fs from 'fs'
 import path from 'path'
 import config from './config'
-import { RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
+import { ImageToImageResponseBody, RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
+
 const VERBOSE = config.verbose
 
 export const createRequestBody = ({
@@ -99,6 +101,52 @@ export const createHeaders = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${config.stableDiffusionApiKey}`,
 })
+
+// New function to create request body for image-to-image
+export const createImageToImageRequestBody = (
+  initImagePath: string,
+  prompt: string,
+  negativePrompt: string,
+): FormData => {
+  const formData = new FormData()
+  formData.append('init_image', fs.readFileSync(initImagePath))
+  formData.append('init_image_mode', 'IMAGE_STRENGTH')
+  formData.append('image_strength', 0.35)
+  formData.append('steps', 40)
+  formData.append('width', 1024)
+  formData.append('height', 1024)
+  formData.append('seed', 0)
+  formData.append('cfg_scale', 5)
+  formData.append('samples', 1)
+  formData.append('text_prompts[0][text]', prompt)
+  formData.append('text_prompts[0][weight]', 1)
+  formData.append('text_prompts[1][text]', negativePrompt)
+  formData.append('text_prompts[1][weight]', -1)
+  return formData
+}
+
+export const imageToImage = async (
+  initImagePath: string,
+  prompt: string,
+  negativePrompt = 'blurry, bad',
+): Promise<string[]> => {
+  const headers = {
+    ...createHeaders(),
+    ...createImageToImageRequestBody(initImagePath, prompt, negativePrompt).getHeaders(),
+  }
+  const response = await fetch(config.imageToImageApiUrl, {
+    method: 'POST',
+    headers,
+    body: createImageToImageRequestBody(initImagePath, prompt, negativePrompt) as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    await handleErrorResponse(response as Response)
+  }
+
+  const responseJSON: ImageToImageResponseBody = (await response.json()) as ImageToImageResponseBody
+  return saveImages(responseJSON)
+}
 
 export const textToImage = async ({
   prompt,
