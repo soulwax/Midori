@@ -29,9 +29,12 @@ process.emitWarning = function (warning: string | Error, options?: undefined) {
   return originalEmitWarning.apply(this, [warning, options])
 }
 
+import { Attachment } from 'discord.js'
 import FormData from 'form-data'
 import fs from 'fs'
+import https from 'https'
 import path from 'path'
+import { pipeline } from 'stream/promises'
 import config from './config'
 import { ImageToImageResponseBody, RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
 
@@ -61,7 +64,7 @@ export const createRequestBody = ({
   ],
 })
 
-export const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
+export const saveOutgoingImages = (responseJSON: TextToImageResponseBody): string[] => {
   const paths: string[] = []
   console.log('Saving images...')
   const outputFolder = './images/out'
@@ -79,6 +82,44 @@ export const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
   })
 
   return paths
+}
+
+export const saveIncomingImages = async (attachment: Attachment): Promise<string[]> => {
+  const paths: string[] = []
+  console.log('Saving images...')
+  const outputFolder = './images/in'
+  const name = attachment.name
+  const url = new URL(attachment.url)
+
+  // Create the directory if it doesn't exist
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true })
+  }
+
+  const filePath = path.join(outputFolder, name)
+  paths.push(filePath)
+
+  return new Promise<string[]>((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        if (response.statusCode !== 200) {
+          reject(new Error(`Failed to download image: ${response.statusMessage}`))
+          return
+        }
+
+        pipeline(response, fs.createWriteStream(filePath))
+          .then(() => {
+            console.log(`Saved image to ${filePath}`)
+            resolve(paths)
+          })
+          .catch((err) => {
+            reject(new Error(`Failed to save image: ${err.message}`))
+          })
+      })
+      .on('error', (err) => {
+        reject(new Error(`Failed to download image: ${err.message}`))
+      })
+  })
 }
 
 export const handleErrorResponse = async (response: Response) => {
@@ -145,7 +186,7 @@ export const imageToImage = async (
   }
 
   const responseJSON: ImageToImageResponseBody = (await response.json()) as ImageToImageResponseBody
-  return saveImages(responseJSON)
+  return saveOutgoingImages(responseJSON)
 }
 
 export const textToImage = async ({
@@ -181,5 +222,5 @@ export const textToImage = async ({
     console.dir(responseJSON)
     console.log('----------------')
   }
-  return saveImages(responseJSON)
+  return saveOutgoingImages(responseJSON)
 }

@@ -42,7 +42,12 @@ export const execute = async (interaction: CommandInteraction) => {
   // Map the sorted commands to their string representations
   const commands = sortedCommands.map((command) => {
     const cmd = command as Command
-    return `\t **/${cmd.name}** : ${cmd.description}\n`
+    const result = [
+      `\t **/${cmd.name}** : ${cmd.description}`,
+      ' - Respond to me and I will generate a /diffuse image for you.',
+      ' - Respond with an image and I will enhance it.',
+    ].join('\n')
+    return result
   })
 
   // Reply with the list

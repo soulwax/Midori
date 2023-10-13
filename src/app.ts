@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AttachmentBuilder, Message } from 'discord.js'
+import { Attachment, AttachmentBuilder, Message } from 'discord.js'
 import config from './config'
 import server from './setup'
 import { Command } from './types'
-import { textToImage } from './utils'
+import { imageToImage, saveIncomingImages, textToImage } from './utils' // Import imageToImage
 
 const VERBOSE = config.verbose
 
@@ -42,6 +42,8 @@ server.client.on('messageCreate', async (message: Message) => {
   const wasRepliedTo: boolean = message.mentions.has(server.client.user?.id ?? '')
   const doesMentionMyself: boolean = message.mentions.has(server.client.user?.toString() ?? '')
   const wasRepliedToByABot: boolean = message.author.bot
+  const firstAttachment: Attachment | undefined = message.attachments.first() as Attachment
+
   const prompt = message.content.replace(/<@\d+> ?/g, '')
   if (message.content.startsWith('hey')) {
     await message.reply(
@@ -59,7 +61,20 @@ server.client.on('messageCreate', async (message: Message) => {
       const firstPost = `Generating image for ${message.author.displayName}: \`${prompt}\`...`
       if (VERBOSE) console.log(firstPost)
       await message.reply(`${firstPost}`)
-      const imagePaths = await textToImage({ prompt })
+
+      let imagePaths: string[] = []
+
+      if (firstAttachment) {
+        // Save the image locally
+        const incomingImagePath: string[] = await saveIncomingImages(firstAttachment)
+
+        // Generate image-to-image
+        imagePaths = await imageToImage(incomingImagePath[0], prompt) // We only care about the first image
+      } else {
+        // Generate text-to-image
+        imagePaths = await textToImage({ prompt })
+      }
+
       const attachment = new AttachmentBuilder(imagePaths[0])
       await message.reply({ files: [attachment] })
     } catch (error) {

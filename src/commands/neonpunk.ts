@@ -22,7 +22,7 @@ import { execDiscord } from '../exec'
 import { RequestBodyOptions } from '../types'
 
 export const name = 'neonpunk'
-export const description = 'This command will generate neonpunk art.'
+export const description = 'This command will attempt neon-punk.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {

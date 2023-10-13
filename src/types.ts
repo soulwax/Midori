@@ -44,7 +44,7 @@ export interface Command {
   createHeaders(): Record<string, string>
   createRequestBody(prompt: string): TextToImageRequestBody
   handleErrorResponse(response: Response): Promise<void>
-  saveImages(responseJSON: TextToImageResponseBody): string[]
+  saveOutgoingImages(responseJSON: TextToImageResponseBody): string[]
   textToImage(prompt: string): Promise<string[]>
 }
 
