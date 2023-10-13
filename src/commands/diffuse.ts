@@ -28,8 +28,8 @@ export const description =
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry, bad, ugly, low quality',
     stylePreset: undefined,
+    negativePrompt: 'blurry, bad, ugly, low quality',
   }
   execDiscord(interaction, options)
 }

@@ -27,8 +27,8 @@ export const description = 'This command will generate isometric art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'ugly, bad, grid',
     stylePreset: 'isometric',
+    negativePrompt: 'ugly, bad, grid',
   }
   execDiscord(interaction, options)
 }

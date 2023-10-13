@@ -27,8 +27,8 @@ export const description = 'This command will generate fantasy art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'ugly, bad, mythical creatures',
     stylePreset: 'fantasy-art',
+    negativePrompt: 'ugly, bad, mythical creatures',
   }
   execDiscord(interaction, options)
 }

@@ -27,8 +27,8 @@ export const description = 'This command will generate analog film art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'grain, blurry, ugly, bad',
     stylePreset: 'analog-film',
+    negativePrompt: 'grain, blurry, ugly, bad',
   }
   execDiscord(interaction, options)
 }

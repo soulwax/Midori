@@ -27,8 +27,8 @@ export const description = 'This command will generate line art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'ugly, bad',
     stylePreset: 'line-art',
+    negativePrompt: 'ugly, bad',
   }
   execDiscord(interaction, options)
 }

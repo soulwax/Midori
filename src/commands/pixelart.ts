@@ -27,8 +27,8 @@ export const description = 'This command will generate pixel art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'ugly, bad, blurry, dithering',
     stylePreset: 'pixel-art',
+    negativePrompt: 'ugly, bad, blurry, dithering',
   }
   execDiscord(interaction, options)
 }

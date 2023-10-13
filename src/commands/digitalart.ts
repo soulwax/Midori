@@ -27,8 +27,8 @@ export const description = 'This command will generate a digital art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry, bad, ugly, brush strokes',
     stylePreset: 'digital-art',
+    negativePrompt: 'blurry, bad, ugly, brush strokes',
   }
   execDiscord(interaction, options)
 }

@@ -27,8 +27,8 @@ export const description = 'This command will generate neonpunk art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry, ugly, bad, neon lights',
     stylePreset: 'neon-punk',
+    negativePrompt: 'blurry, ugly, bad, neon lights',
   }
   execDiscord(interaction, options)
 }

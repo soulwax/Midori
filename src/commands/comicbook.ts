@@ -28,8 +28,8 @@ export const description = 'This command will generate comic book art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'speech bubbles, blurry, bad, text',
     stylePreset: 'comic-book',
+    negativePrompt: 'speech bubbles, blurry, bad, text',
   }
   execDiscord(interaction, options)
 }

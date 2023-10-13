@@ -27,8 +27,8 @@ export const description = 'This command will generate modeling compounds.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry, ugly, bad, gloss',
     stylePreset: 'modeling-compound',
+    negativePrompt: 'blurry, ugly, bad, gloss',
   }
   execDiscord(interaction, options)
 }

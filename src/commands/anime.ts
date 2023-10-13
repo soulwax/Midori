@@ -27,8 +27,8 @@ export const description = 'This command will generate animu.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry face, ugly face, chibi',
     stylePreset: 'anime',
+    negativePrompt: 'blurry face, ugly face, chibi',
   }
   execDiscord(interaction, options)
 }

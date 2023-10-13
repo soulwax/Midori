@@ -27,8 +27,8 @@ export const description = 'This command will generate art with few polygons.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry, ugly, bad, wireframe',
     stylePreset: 'low-poly',
+    negativePrompt: 'blurry, ugly, bad, wireframe',
   }
   execDiscord(interaction, options)
 }

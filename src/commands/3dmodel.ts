@@ -27,8 +27,8 @@ export const description = 'This command will generate 3d model art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'blurry, bad, no textures',
     stylePreset: '3d-model',
+    negativePrompt: 'blurry, bad, no textures',
   }
   execDiscord(interaction, options)
 }

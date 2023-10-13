@@ -27,8 +27,8 @@ export const description = 'This command will generate cinematic art.'
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    negativePrompt: 'lens flare, ugly, bad',
     stylePreset: 'cinematic',
+    negativePrompt: 'lens flare, ugly, bad',
   }
   execDiscord(interaction, options)
 }
