@@ -29,9 +29,15 @@ process.emitWarning = function (warning: string | Error, options?: undefined) {
   return originalEmitWarning.apply(this, [warning, options])
 }
 
+import { Attachment } from 'discord.js'
+import FormData from 'form-data'
 import fs from 'fs'
+import https from 'https'
+import path from 'path'
+import { pipeline } from 'stream/promises'
 import config from './config'
-import { RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
+import { ImageToImageResponseBody, RequestBodyOptions, TextToImageRequestBody, TextToImageResponseBody } from './types'
+
 const VERBOSE = config.verbose
 
 export const createRequestBody = ({
@@ -58,16 +64,62 @@ export const createRequestBody = ({
   ],
 })
 
-export const saveImages = (responseJSON: TextToImageResponseBody): string[] => {
+export const saveOutgoingImages = (responseJSON: TextToImageResponseBody): string[] => {
   const paths: string[] = []
   console.log('Saving images...')
+  const outputFolder = './images/out'
+
+  // Create the directory if it doesn't exist
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true })
+  }
+
   responseJSON.artifacts.forEach((image: { seed: number; base64: string }) => {
-    const path = `./images/out/txt2img_${image.seed}.png`
-    paths.push(path)
-    fs.writeFileSync(path, Buffer.from(image.base64, 'base64'))
-    if (VERBOSE) console.log(`Saved image to ${path}`)
+    const filePath = path.join(outputFolder, `txt2img_${image.seed}.png`)
+    paths.push(filePath)
+    fs.writeFileSync(filePath, Buffer.from(image.base64, 'base64'))
+    if (VERBOSE) console.log(`Saved image to ${filePath}`)
   })
+
   return paths
+}
+
+export const saveIncomingImages = async (attachment: Attachment): Promise<string[]> => {
+  const paths: string[] = []
+  console.log('Saving images...')
+  const outputFolder = './images/in'
+  const name = attachment.name
+  const url = new URL(attachment.url)
+
+  // Create the directory if it doesn't exist
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true })
+  }
+
+  const filePath = path.join(outputFolder, name)
+  paths.push(filePath)
+
+  return new Promise<string[]>((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        if (response.statusCode !== 200) {
+          reject(new Error(`Failed to download image: ${response.statusMessage}`))
+          return
+        }
+
+        pipeline(response, fs.createWriteStream(filePath))
+          .then(() => {
+            console.log(`Saved image to ${filePath}`)
+            resolve(paths)
+          })
+          .catch((err) => {
+            reject(new Error(`Failed to save image: ${err.message}`))
+          })
+      })
+      .on('error', (err) => {
+        reject(new Error(`Failed to download image: ${err.message}`))
+      })
+  })
 }
 
 export const handleErrorResponse = async (response: Response) => {
@@ -90,6 +142,52 @@ export const createHeaders = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${config.stableDiffusionApiKey}`,
 })
+
+// New function to create request body for image-to-image
+export const createImageToImageRequestBody = (
+  initImagePath: string,
+  prompt: string,
+  negativePrompt: string,
+): FormData => {
+  const formData = new FormData()
+  formData.append('init_image', fs.readFileSync(initImagePath))
+  formData.append('init_image_mode', 'IMAGE_STRENGTH')
+  formData.append('image_strength', 0.35)
+  formData.append('steps', 40)
+  formData.append('width', 1024)
+  formData.append('height', 1024)
+  formData.append('seed', 0)
+  formData.append('cfg_scale', 5)
+  formData.append('samples', 1)
+  formData.append('text_prompts[0][text]', prompt)
+  formData.append('text_prompts[0][weight]', 1)
+  formData.append('text_prompts[1][text]', negativePrompt)
+  formData.append('text_prompts[1][weight]', -1)
+  return formData
+}
+
+export const imageToImage = async (
+  initImagePath: string,
+  prompt: string,
+  negativePrompt = 'blurry, bad',
+): Promise<string[]> => {
+  const headers = {
+    ...createHeaders(),
+    ...createImageToImageRequestBody(initImagePath, prompt, negativePrompt).getHeaders(),
+  }
+  const response = await fetch(config.imageToImageApiUrl, {
+    method: 'POST',
+    headers,
+    body: createImageToImageRequestBody(initImagePath, prompt, negativePrompt) as unknown as BodyInit,
+  })
+
+  if (!response.ok) {
+    await handleErrorResponse(response as Response)
+  }
+
+  const responseJSON: ImageToImageResponseBody = (await response.json()) as ImageToImageResponseBody
+  return saveOutgoingImages(responseJSON)
+}
 
 export const textToImage = async ({
   prompt,
@@ -124,5 +222,5 @@ export const textToImage = async ({
     console.dir(responseJSON)
     console.log('----------------')
   }
-  return saveImages(responseJSON)
+  return saveOutgoingImages(responseJSON)
 }

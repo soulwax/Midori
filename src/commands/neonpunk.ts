@@ -17,40 +17,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // src/commands/neonpunk.ts
 // Import required modules and types
-import { AttachmentBuilder, CommandInteraction } from 'discord.js'
-import config from '../config'
-import { textToImage } from '../utils'
-const VERBOSE = config.verbose
+import { CommandInteraction } from 'discord.js'
+import { execDiscord } from '../exec'
+import { RequestBodyOptions } from '../types'
 
-// Define the command
 export const name = 'neonpunk'
-export const description = 'This command will attempt a neon-punk style image from a prompt and reply with the result.'
+export const description = 'This command will attempt neon-punk.'
 
 export const execute = async (interaction: CommandInteraction) => {
-  const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
-
-  const promptText = prompt.value?.toString() as string
-  const member = interaction.member?.toString() as string
-  // Check for mentions and replies
-  const firstPost = `Generating Neon Punk Art for ${member}: \`${prompt.value}\`...`
-  if (VERBOSE) {
-    console.log(`/${name} ${promptText} was executed by ${member} in #${interaction.channel?.url}`)
+  const options: RequestBodyOptions = {
+    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
+    stylePreset: 'neon-punk',
+    negativePrompt: 'blurry, ugly, bad, neon lights',
   }
-  try {
-    await interaction.reply(firstPost)
-    const paths = await textToImage({
-      prompt: promptText,
-      stylePreset: 'neon-punk',
-      negativePrompt: 'bad, ugly, low quality',
-    })
-    const attachment = new AttachmentBuilder(paths[0])
-    await interaction.followUp({ files: [attachment] })
-  } catch (error) {
-    console.error(error)
-    try {
-      await interaction.followUp(`Something went wrong: ${error}`)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  execDiscord(interaction, options)
 }

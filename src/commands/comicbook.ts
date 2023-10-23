@@ -15,20 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// src/commands/tiletexture.ts
+// src/commands/comicbook.ts
 // Import required modules and types
 import { CommandInteraction } from 'discord.js'
 import { execDiscord } from '../exec'
 import { RequestBodyOptions } from '../types'
 
-export const name = 'tiletexture'
-export const description = 'This command will generate tile textures.'
+// Define the command
+export const name = 'comicbook'
+export const description = 'This command will generate comic book art.'
 
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'tile-texture',
-    negativePrompt: 'blurry, bad, text, ugly, low quality, repeating patterns',
+    stylePreset: 'comic-book',
+    negativePrompt: 'speech bubbles, blurry, bad, text',
   }
   execDiscord(interaction, options)
 }
