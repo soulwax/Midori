@@ -9,6 +9,7 @@
     "dev": "nodemon --inspect=0.0.0.0:9331 --exec 'ts-node src/app.ts --watch src --trace-warnings'",
     "test": "nodemon --harmony --delay 500ms --inspect=9331 dist/app.js --exec 'node --trace-warnings'",
     "build": "tsc",
+    "postinstall": "tsc",
     "watch": "tsc -w",
     "pm2": "pm2 start dist/app.js --name=Midoridan --node-args=\"--inspect --inspect-port=9331 --harmony\"",
     "lint": "eslint --ext .ts src",

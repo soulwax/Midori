@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Attachment, AttachmentBuilder, Message } from 'discord.js'
-import config from './config'
-import server from './setup'
-import { Command } from './types'
-import { imageToImage, saveIncomingImages, textToImage } from './utils' // Import imageToImage
+import { ActivityType, Attachment, AttachmentBuilder, Message } from 'discord.js';
+import config from './config';
+import server from './setup';
+import { Command } from './types';
+import { imageToImage, saveIncomingImages, textToImage } from './utils'; // Import imageToImage
 
 const VERBOSE = config.verbose
 
@@ -85,3 +85,11 @@ server.client.on('messageCreate', async (message: Message) => {
 })
 
 server.client.login(config.token)
+server.client.user?.setPresence({
+  activities: [
+    {
+      name: "Imperial Cult Painting",
+      type: ActivityType.Watching,
+    },
+  ],
+})
