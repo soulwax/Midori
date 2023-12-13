@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 import { REST } from '@discordjs/rest'
-import { Routes } from 'discord-api-types/v10'
+import { ActivityType, Routes } from 'discord-api-types/v10'
 import { Client, Collection, SlashCommandBuilder } from 'discord.js'
 import fs from 'fs'
 import path from 'path'
@@ -139,6 +139,15 @@ client.on('interactionCreate', async (interaction) => {
 
 //#endregion
 
+
+client.user?.setPresence({
+  activities: [
+    {
+      name: "Imperial Cult Painting",
+      type: ActivityType.Watching,
+    },
+  ],
+})
 export default {
   client: client,
   rest: rest,
