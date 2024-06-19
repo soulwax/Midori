@@ -56,7 +56,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN ?? '')
 const client = new Client({
   intents: intents,
 }) as ClientWithCommands
-client.setMaxListeners(15)
+
 client.commands = new Collection()
 
 // Asynchronously load all command files and return them as an array of Commands
@@ -139,11 +139,10 @@ client.on('interactionCreate', async (interaction) => {
 
 //#endregion
 
-
 client.user?.setPresence({
   activities: [
     {
-      name: "Imperial Cult Painting",
+      name: 'Imperial Cult Painting',
       type: ActivityType.Watching,
     },
   ],

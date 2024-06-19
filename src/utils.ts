@@ -107,7 +107,7 @@ export const saveIncomingImages = async (attachment: Attachment): Promise<string
           return
         }
 
-        pipeline(response, fs.createWriteStream(filePath))
+        pipeline(response, fs.createWriteStream(filePath) as unknown as NodeJS.WritableStream)
           .then(() => {
             console.log(`Saved image to ${filePath}`)
             resolve(paths)

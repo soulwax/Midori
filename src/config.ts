@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dotenv from 'dotenv';
-dotenv.config();
-import { GatewayIntentBits } from 'discord.js';
+import dotenv from 'dotenv'
+dotenv.config()
+import { GatewayIntentBits } from 'discord.js'
 
 export default {
   token: process.env.DISCORD_TOKEN as string,
@@ -48,4 +48,4 @@ export default {
     GatewayIntentBits.AutoModerationExecution,
     GatewayIntentBits.GuildModeration,
   ] as GatewayIntentBits[],
-};
+}
