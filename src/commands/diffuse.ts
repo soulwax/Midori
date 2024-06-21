@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // src/commands/diffuse.ts
 // Import required modules and types
 import { CommandInteraction } from 'discord.js'
-import { execDiscord } from '../exec'
+import { execImageGeneration } from '../exec'
 import { RequestBodyOptions } from '../types'
 
 export const name = 'diffuse'
@@ -31,5 +31,5 @@ export const execute = async (interaction: CommandInteraction) => {
     stylePreset: undefined,
     negativePrompt: 'blurry, bad, ugly, low quality',
   }
-  execDiscord(interaction, options)
+  execImageGeneration(interaction, options)
 }

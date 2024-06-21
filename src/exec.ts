@@ -5,7 +5,7 @@ import { textToImage } from './utils'
 
 const VERBOSE = config.verbose
 
-export const execDiscord = async (interaction: CommandInteraction, options: RequestBodyOptions) => {
+export const execImageGeneration = async (interaction: CommandInteraction, options: RequestBodyOptions) => {
   const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
   const commandName = interaction.commandName // Get the command name
   const promptText = prompt.value?.toString() as string

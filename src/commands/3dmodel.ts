@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // src/commands/3dmodel.ts
 // Import required modules and types
 import { CommandInteraction } from 'discord.js'
-import { execDiscord } from '../exec'
+import { execImageGeneration } from '../exec'
 import { RequestBodyOptions } from '../types'
 
 export const name = '3dmodel'
@@ -30,5 +30,5 @@ export const execute = async (interaction: CommandInteraction) => {
     stylePreset: '3d-model',
     negativePrompt: 'blurry, bad, no textures',
   }
-  execDiscord(interaction, options)
+  execImageGeneration(interaction, options)
 }

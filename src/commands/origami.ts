@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // src/commands/origami.ts
 // Import required modules and types
 import { CommandInteraction } from 'discord.js'
-import { execDiscord } from '../exec'
+import { execImageGeneration } from '../exec'
 import { RequestBodyOptions } from '../types'
 
 export const name = 'origami'
@@ -30,5 +30,5 @@ export const execute = async (interaction: CommandInteraction) => {
     stylePreset: 'origami',
     negativePrompt: 'blurry, crease lines',
   }
-  execDiscord(interaction, options)
+  execImageGeneration(interaction, options)
 }
