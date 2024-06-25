@@ -20,27 +20,28 @@ import config from './config'
 import server from './setup'
 import { Command } from './types'
 import { imageToImage, saveIncomingImages, textToImage } from './utils' // Import imageToImage
+const client = server.client
 
 const VERBOSE = config.verbose
 
-server.client.once('ready', async () => {
-  console.log(`Logged in as ${server.client.user?.tag}!`)
+client.once('ready', async () => {
+  console.log(`Logged in as ${client.user?.tag}!`)
   // List all guilds
   console.log('Guilds:')
-  server.client.guilds.cache.forEach((guild) => {
+  client.guilds.cache.forEach((guild) => {
     console.log(` - ${guild.name}`)
   })
   // List all commands
   console.log('Commands:')
-  server.client.commands.forEach((command) => {
+  client.commands.forEach((command) => {
     console.log(` - ${(command as Command).name}`)
   })
 })
 
 // This area is for autoreplying to mentions and replies aside from '/'-commands
-server.client.on('messageCreate', async (message: Message) => {
-  const wasRepliedTo: boolean = message.mentions.has(server.client.user?.id ?? '')
-  const doesMentionMyself: boolean = message.mentions.has(server.client.user?.toString() ?? '')
+client.on('messageCreate', async (message: Message) => {
+  const wasRepliedTo: boolean = message.mentions.has(client.user?.id ?? '')
+  const doesMentionMyself: boolean = message.mentions.has(client.user?.toString() ?? '')
   const wasRepliedToByABot: boolean = message.author.bot
   const firstAttachment: Attachment | undefined = message.attachments.first() as Attachment
 
@@ -50,7 +51,7 @@ server.client.on('messageCreate', async (message: Message) => {
       [
         `Hey there! You said **${message.content}**!`,
         '',
-        `Try mentioning me in a message like this: <@!${server.client.user?.id}>`,
+        `Try mentioning me in a message like this: <@!${client.user?.id}>`,
         '',
         `Or just reply to me, I will generate an image based off of your message. :pepiwumpy:`,
       ].join('\n'),
@@ -84,8 +85,8 @@ server.client.on('messageCreate', async (message: Message) => {
   }
 })
 
-server.client.login(config.token)
-// server.client.user?.setPresence({
+client.login(config.token)
+// client.user?.setPresence({
 //   activities: [
 //     {
 //       name: "Imperial Cult Painting",
