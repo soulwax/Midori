@@ -33,9 +33,9 @@
   "license": "LGPL-3.0-or-later",
   "dependencies": {
     "@discordjs/rest": "^2.4.0",
-    "axios": "^1.7.8",
+    "axios": "^1.7.9",
     "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "fetch": "^1.1.0",
     "https": "^1.0.0",
     "node-html-parser": "^6.1.13",
