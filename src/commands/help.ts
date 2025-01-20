@@ -1,3 +1,5 @@
+// File: src/commands/help.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 

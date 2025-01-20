@@ -1,3 +1,5 @@
+// File: src/config.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 

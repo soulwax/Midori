@@ -1,3 +1,5 @@
+// File: src/commands/fractal.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 

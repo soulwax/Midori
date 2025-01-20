@@ -1,3 +1,5 @@
+// File: src/commands/diffuse.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 

@@ -1,3 +1,5 @@
+// File: src/commands/3dmodel.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 
