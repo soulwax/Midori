@@ -27,10 +27,10 @@ export const name = 'photographic'
 export const description = 'This command will generate photographic art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'photographic',
-    negativePrompt: 'blurry, ugly, bad, bokeh',
+    prompt: `professional photography, high resolution, perfect exposure, DSLR quality, ${prompt}`,
+    negativePrompt: 'illustration, drawing, painting, artificial, rendered',
   }
   execImageGeneration(interaction, options)
 }

@@ -28,10 +28,10 @@ export const name = 'comicbook'
 export const description = 'This command will generate comic book art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'comic-book',
-    negativePrompt: 'speech bubbles, blurry, bad, text',
+    prompt: `comic book art style, bold colors, ink lines, comic panel layout, ${prompt}`,
+    negativePrompt: 'photorealistic, 3d rendering, watercolor, blurry',
   }
   execImageGeneration(interaction, options)
 }

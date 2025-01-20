@@ -68,13 +68,9 @@ client.on('messageCreate', async (message: Message) => {
       let imagePaths: string[] = []
 
       if (firstAttachment) {
-        // Save the image locally
         const incomingImagePath: string[] = await saveIncomingImages(firstAttachment)
-
-        // Generate image-to-image
-        imagePaths = await imageToImage(incomingImagePath[0], prompt) // We only care about the first image
+        imagePaths = await imageToImage(incomingImagePath[0], prompt)
       } else {
-        // Generate text-to-image
         imagePaths = await textToImage({ prompt })
       }
 
@@ -82,7 +78,19 @@ client.on('messageCreate', async (message: Message) => {
       await message.reply({ files: [attachment] })
     } catch (error) {
       console.error('Error generating image:', error)
-      await message.reply(`Sorry, I encountered an error while generating the image.\n${error}`)
+      // Send error as DM to avoid cluttering the channel
+      try {
+        await message.author.send(`Error generating image: ${error}`)
+        // Send a brief public response indicating error was sent via DM
+        await message.reply({
+          content: "I encountered an error. I've sent you the details via DM.",
+        })
+      } catch (dmError) {
+        // Fallback if DM fails
+        await message.reply({
+          content: `Error: ${error}`,
+        })
+      }
     }
   }
 })

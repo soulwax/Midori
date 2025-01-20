@@ -27,10 +27,10 @@ export const name = 'neonpunk'
 export const description = 'This command will attempt neon-punk.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'neon-punk',
-    negativePrompt: 'blurry, ugly, bad, neon lights',
+    prompt: `cyberpunk style, neon lights, futuristic city, bright glowing elements, ${prompt}`,
+    negativePrompt: 'natural lighting, daylight, vintage, rustic',
   }
   execImageGeneration(interaction, options)
 }

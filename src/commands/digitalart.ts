@@ -27,10 +27,10 @@ export const name = 'digitalart'
 export const description = 'This command will generate a digital art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'digital-art',
-    negativePrompt: 'blurry, bad, ugly, brush strokes',
+    prompt: `fantasy art style, magical atmosphere, ethereal lighting, mystical scene, ${prompt}`,
+    negativePrompt: 'mundane, modern, realistic, contemporary',
   }
   execImageGeneration(interaction, options)
 }

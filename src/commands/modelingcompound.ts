@@ -27,10 +27,10 @@ export const name = 'modelingcompound'
 export const description = 'This command will generate modeling compounds.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'modeling-compound',
-    negativePrompt: 'blurry, ugly, bad, gloss',
+    prompt: `clay art, plasticine sculpture, modeling compound texture, handcrafted feel, ${prompt}`,
+    negativePrompt: 'digital, sharp edges, photorealistic, smooth surfaces',
   }
   execImageGeneration(interaction, options)
 }

@@ -27,10 +27,10 @@ export const name = 'lineart'
 export const description = 'This command will generate line art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'line-art',
-    negativePrompt: 'ugly, bad',
+    prompt: `clean line art, black and white drawing, precise linework, ${prompt}`,
+    negativePrompt: 'color, shading, watercolor, painterly',
   }
   execImageGeneration(interaction, options)
 }

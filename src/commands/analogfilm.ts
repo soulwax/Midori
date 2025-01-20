@@ -27,10 +27,10 @@ export const name = 'analogfilm'
 export const description = 'This command will generate analog film art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'analog-film',
-    negativePrompt: 'grain, blurry, ugly, bad',
+    prompt: `35mm film photography, analog photo, film grain, Kodak Portra 400, ${prompt}`,
+    negativePrompt: 'digital, sharp, clean, perfect, flawless',
   }
   execImageGeneration(interaction, options)
 }

@@ -27,10 +27,10 @@ export const name = 'origami'
 export const description = 'This command will generate origami art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'origami',
-    negativePrompt: 'blurry, crease lines',
+    prompt: `origami art style, folded paper texture, crisp edges, paper craft aesthetic, ${prompt}`,
+    negativePrompt: 'realistic, smooth, organic, curved surfaces',
   }
   execImageGeneration(interaction, options)
 }

@@ -30,8 +30,7 @@ export const description =
 export const execute = async (interaction: CommandInteraction) => {
   const options: RequestBodyOptions = {
     prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: undefined,
-    negativePrompt: 'blurry, bad, ugly, low quality',
+    negativePrompt: 'blurry, bad, ugly, low quality, noise, grain',
   }
   execImageGeneration(interaction, options)
 }

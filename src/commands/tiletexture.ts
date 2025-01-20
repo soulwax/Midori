@@ -27,10 +27,10 @@ export const name = 'tiletexture'
 export const description = 'This command will generate tile textures.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'tile-texture',
-    negativePrompt: 'blurry, bad, text, ugly, low quality, repeating patterns',
+    prompt: `seamless tile texture, repeating pattern, surface design, ${prompt}`,
+    negativePrompt: 'irregular patterns, perspective, non-repeating elements',
   }
   execImageGeneration(interaction, options)
 }

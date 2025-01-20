@@ -45,25 +45,17 @@ const VERBOSE = config.verbose
 export const createRequestBody = ({
   prompt,
   negativePrompt = 'blurry, bad',
-  stylePreset,
 }: RequestBodyOptions): TextToImageRequestBody => ({
+  prompt: `${prompt} ${negativePrompt ? `. Negative prompt: ${negativePrompt}` : ''}`,
+  output_format: 'webp',
+  cfg_scale: 7,
   steps: 40,
-  width: 1024,
-  height: 1024,
   seed: 0,
-  cfg_scale: 5,
   samples: 1,
-  style_preset: stylePreset,
-  text_prompts: [
-    {
-      text: prompt,
-      weight: 1,
-    },
-    {
-      text: negativePrompt,
-      weight: -1,
-    },
-  ],
+  width: 0,
+  height: 0,
+  style_preset: undefined,
+  text_prompts: [],
 })
 
 export const saveOutgoingImages = (responseJSON: TextToImageResponseBody): string[] => {
@@ -127,15 +119,21 @@ export const saveIncomingImages = async (attachment: Attachment): Promise<string
 export const handleErrorResponse = async (response: Response) => {
   let errorMessage = ''
   let additionalInfo = ''
-  if (response.status === 429 || response.status === 427) {
-    additionalInfo = 'You are being rate limited or the api is down (expired api key possible, contact admin).'
-  } else if (response.status === 400 || response.status === 404) {
-    additionalInfo = 'The request is probably malformed, try to reduce nudity or any nsfw content.'
-  } else {
-    additionalInfo = 'This error is strange, maybe there is an api update undergoing or the api is down.'
+
+  try {
+    const errorData = await response.text()
+    additionalInfo = errorData
+  } catch (e) {
+    additionalInfo = 'Could not parse error response'
   }
-  errorMessage = `\`${response.statusText}\`\nWeb status code response from stability.ai api: \`${response.status}\`\nBonus info: \`${additionalInfo}\``
-  console.error(errorMessage)
+
+  if (response.status === 429) {
+    additionalInfo = 'Rate limit exceeded'
+  } else if (response.status === 401) {
+    additionalInfo = 'Invalid API key'
+  }
+
+  errorMessage = `Error from Stability AI API: ${response.status} ${response.statusText}\n${additionalInfo}`
   throw new Error(errorMessage)
 }
 
@@ -194,35 +192,38 @@ export const imageToImage = async (
 export const textToImage = async ({
   prompt,
   negativePrompt = 'blurry, bad',
-  stylePreset,
 }: RequestBodyOptions): Promise<string[]> => {
-  const headers = createHeaders()
-  const body = createRequestBody({ prompt, negativePrompt, stylePreset })
+  const formData = new FormData()
+  const body = createRequestBody({ prompt, negativePrompt })
 
-  if (VERBOSE) {
-    console.log('Request headers:')
-    console.dir(headers)
-    console.log('----------------')
-    console.log('Request body:')
-    console.dir(body)
-    console.log('----------------')
-  }
+  // Convert body to FormData
+  Object.entries(body).forEach(([key, value]) => {
+    formData.append(key, value)
+  })
+
   const response = await fetch(config.textToImageApiUrl ?? '', {
-    headers,
     method: 'POST',
-    body: JSON.stringify(body),
+    headers: {
+      Authorization: `Bearer ${config.stableDiffusionApiKey}`,
+      Accept: 'image/*',
+      ...formData.getHeaders(),
+    },
+    body: formData.getBuffer(),
   })
 
   if (!response.ok) {
-    await handleErrorResponse(response as Response)
+    await handleErrorResponse(response)
   }
 
-  const responseJSON: TextToImageResponseBody = (await response.json()) as TextToImageResponseBody
-  if (VERBOSE) {
-    console.log('----------------')
-    console.log('Response body as JSON:')
-    console.dir(responseJSON)
-    console.log('----------------')
+  // The response is now a binary image
+  const buffer = await response.arrayBuffer()
+  const outputFolder = './images/out'
+  const filePath = path.join(outputFolder, `txt2img_${Date.now()}.webp`)
+
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true })
   }
-  return saveOutgoingImages(responseJSON)
+
+  fs.writeFileSync(filePath, Buffer.from(buffer))
+  return [filePath]
 }

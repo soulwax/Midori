@@ -27,10 +27,10 @@ export const name = 'isometric'
 export const description = 'This command will generate isometric art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'isometric',
-    negativePrompt: 'ugly, bad, grid',
+    prompt: `isometric perspective, geometric design, 45-degree angle view, ${prompt}`,
+    negativePrompt: 'perspective drawing, realistic perspective, irregular angles',
   }
   execImageGeneration(interaction, options)
 }

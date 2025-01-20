@@ -27,10 +27,10 @@ export const name = '3dmodel'
 export const description = 'This command will generate 3d model art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: '3d-model',
-    negativePrompt: 'blurry, bad, no textures',
+    prompt: `3D model render, highly detailed 3D geometry, octane render, perfect lighting, ${prompt}`,
+    negativePrompt: 'blurry, noisy, low quality, flat, 2D, sketch, drawing',
   }
   execImageGeneration(interaction, options)
 }

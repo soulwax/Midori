@@ -27,10 +27,10 @@ export const name = 'anime'
 export const description = 'This command will generate animu.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'anime',
-    negativePrompt: 'blurry face, ugly face, chibi',
+    prompt: `anime style artwork, detailed anime illustration, Studio Ghibli inspired, ${prompt}`,
+    negativePrompt: 'photorealistic, 3d, western style, blurry face, deformed features',
   }
   execImageGeneration(interaction, options)
 }

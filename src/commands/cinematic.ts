@@ -27,10 +27,10 @@ export const name = 'cinematic'
 export const description = 'This command will generate cinematic art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'cinematic',
-    negativePrompt: 'lens flare, ugly, bad',
+    prompt: `cinematic shot, dramatic lighting, movie scene, professional cinematography, ${prompt}`,
+    negativePrompt: 'amateur, flat lighting, security camera, home video',
   }
   execImageGeneration(interaction, options)
 }

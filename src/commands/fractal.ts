@@ -27,12 +27,10 @@ export const name = 'fractal'
 export const description = 'This command will generate fractals.'
 
 export const execute = async (interaction: CommandInteraction) => {
-  const prompt = interaction.options.get('prompt', true) // Get the 'prompt' option
-  const modifiedPrompt = (prompt.value?.toString() as string) + ' fractal'
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: modifiedPrompt,
-    stylePreset: 'pixelart',
-    negativePrompt: 'ugly, bad, no colors, no patterns',
+    prompt: `intricate fractal patterns, mathematical art, recursive geometric shapes, ${prompt}`,
+    negativePrompt: 'organic, natural, hand-drawn, irregular',
   }
   execImageGeneration(interaction, options)
 }

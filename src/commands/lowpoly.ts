@@ -27,10 +27,10 @@ export const name = 'lowpoly'
 export const description = 'This command will generate art with few polygons.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'low-poly',
-    negativePrompt: 'blurry, ugly, bad, wireframe',
+    prompt: `low poly 3D art, geometric shapes, faceted design, triangulated style, ${prompt}`,
+    negativePrompt: 'smooth surfaces, curved lines, high detail, realistic',
   }
   execImageGeneration(interaction, options)
 }

@@ -20,12 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // src/types.ts
 import { Client, Collection, CommandInteraction } from 'discord.js'
 export interface TextToImageRequestBody {
-  steps: number
+  prompt: string
   width: number
   height: number
-  seed: number
-  cfg_scale: number
-  samples: number
+  output_format?: string
+  seed?: number
+  cfg_scale?: number
+  steps?: number
+  samples?: number
   style_preset: string | undefined
   text_prompts: Array<{
     text: string

@@ -27,10 +27,10 @@ export const name = 'pixelart'
 export const description = 'This command will generate pixel art.'
 
 export const execute = async (interaction: CommandInteraction) => {
+  const prompt = interaction.options.get('prompt', true)?.value?.toString() as string
   const options: RequestBodyOptions = {
-    prompt: interaction.options.get('prompt', true)?.value?.toString() as string,
-    stylePreset: 'pixel-art',
-    negativePrompt: 'ugly, bad, blurry, dithering',
+    prompt: `pixel art style, retro game graphics, limited color palette, clear pixels, ${prompt}`,
+    negativePrompt: 'smooth gradients, high resolution, realistic, detailed',
   }
   execImageGeneration(interaction, options)
 }
