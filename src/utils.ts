@@ -52,10 +52,7 @@ export const createRequestBody = ({
   steps: 40,
   seed: 0,
   samples: 1,
-  width: 0,
-  height: 0,
-  style_preset: undefined,
-  text_prompts: [],
+  // Remove width/height/style_preset/text_prompts as they're not used in v2beta(?)
 })
 
 export const saveOutgoingImages = (responseJSON: TextToImageResponseBody): string[] => {
@@ -117,24 +114,25 @@ export const saveIncomingImages = async (attachment: Attachment): Promise<string
 }
 
 export const handleErrorResponse = async (response: Response) => {
-  let errorMessage = ''
-  let additionalInfo = ''
+  const errorCodes: Record<number, string> = {
+    400: 'Bad request - check your prompt for forbidden content',
+    401: 'Invalid API key',
+    402: 'Payment required',
+    429: 'Rate limit exceeded',
+    500: 'Internal server error',
+    503: 'Service temporarily unavailable',
+  }
+
+  let message = errorCodes[response.status] || 'Unknown error'
 
   try {
-    const errorData = await response.text()
-    additionalInfo = errorData
-  } catch (e) {
-    additionalInfo = 'Could not parse error response'
+    const errorText = await response.text()
+    message += `\nDetails: ${errorText}`
+  } catch {
+    // Ignore error parsing failure
   }
 
-  if (response.status === 429) {
-    additionalInfo = 'Rate limit exceeded'
-  } else if (response.status === 401) {
-    additionalInfo = 'Invalid API key'
-  }
-
-  errorMessage = `Error from Stability AI API: ${response.status} ${response.statusText}\n${additionalInfo}`
-  throw new Error(errorMessage)
+  throw new Error(`Stability AI API Error (${response.status}): ${message}`)
 }
 
 export const createHeaders = () => ({
@@ -198,7 +196,9 @@ export const textToImage = async ({
 
   // Convert body to FormData
   Object.entries(body).forEach(([key, value]) => {
-    formData.append(key, value)
+    if (value !== undefined) {
+      formData.append(key, value)
+    }
   })
 
   const response = await fetch(config.textToImageApiUrl ?? '', {
@@ -206,16 +206,16 @@ export const textToImage = async ({
     headers: {
       Authorization: `Bearer ${config.stableDiffusionApiKey}`,
       Accept: 'image/*',
-      ...formData.getHeaders(),
+      ...formData.getHeaders(), // Add FormData headers
     },
-    body: formData.getBuffer(),
+    // Fix the type error by using getBuffer() for the body
+    body: formData.getBuffer() as unknown as BodyInit,
   })
 
   if (!response.ok) {
     await handleErrorResponse(response)
   }
 
-  // The response is now a binary image
   const buffer = await response.arrayBuffer()
   const outputFolder = './images/out'
   const filePath = path.join(outputFolder, `txt2img_${Date.now()}.webp`)

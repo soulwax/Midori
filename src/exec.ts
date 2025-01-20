@@ -15,7 +15,6 @@ export const execImageGeneration = async (interaction: CommandInteraction, optio
     await interaction.reply(firstPost)
     const paths = await textToImage({
       prompt: options.prompt,
-      stylePreset: options.stylePreset,
       negativePrompt: options.negativePrompt,
     })
     const attachment = new AttachmentBuilder(paths[0])

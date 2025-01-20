@@ -17,14 +17,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Attachment, AttachmentBuilder, Message } from 'discord.js'
+import { AttachmentBuilder, Message } from 'discord.js'
+import fs from 'fs'
 import config from './config'
 import server from './setup'
 import { Command } from './types'
 import { imageToImage, saveIncomingImages, textToImage } from './utils' // Import imageToImage
 const client = server.client
-
-const VERBOSE = config.verbose
 
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user?.tag}!`)
@@ -40,56 +39,80 @@ client.once('ready', async () => {
   })
 })
 
-// This area is for autoreplying to mentions and replies aside from '/'-commands
 client.on('messageCreate', async (message: Message) => {
-  const wasRepliedTo: boolean = message.mentions.has(client.user?.id ?? '')
-  const doesMentionMyself: boolean = message.mentions.has(client.user?.toString() ?? '')
-  const wasRepliedToByABot: boolean = message.author.bot
-  const firstAttachment: Attachment | undefined = message.attachments.first() as Attachment
+  // Ignore messages from bots
+  if (message.author.bot) return
 
-  const prompt = message.content.replace(/<@\d+> ?/g, '')
-  if (message.content.startsWith('hey')) {
-    await message.reply(
+  // Check if message is directed at the bot
+  const isBotMentioned =
+    message.mentions.has(client.user?.id ?? '') || message.mentions.has(client.user?.toString() ?? '')
+
+  // Handle 'hey' greeting command
+  if (message.content.toLowerCase().startsWith('hey')) {
+    return await message.reply(
       [
         `Hey there! You said **${message.content}**!`,
         '',
         `Try mentioning me in a message like this: <@!${client.user?.id}>`,
         '',
-        `Or just reply to me, I will generate an image based off of your message. :pepiwumpy:`,
+        'Or just reply to me, I will generate an image based off of your message.',
       ].join('\n'),
     )
   }
-  if ((doesMentionMyself || wasRepliedTo) && !wasRepliedToByABot) {
+
+  // Process image generation requests
+  if (isBotMentioned || message.reference?.messageId) {
+    const prompt = message.content.replace(/<@\d+> ?/g, '').trim()
+    const firstAttachment = message.attachments.first()
+    let imagePaths: string[] = []
+
     try {
-      const firstPost = `Generating image for ${message.author.displayName}: \`${prompt}\`...`
-      if (VERBOSE) console.log(firstPost)
-      await message.reply(`${firstPost}`)
+      // Send initial response
+      const processingMessage = await message.reply(
+        `Generating image for ${message.author.displayName}: \`${prompt}\`...`,
+      )
 
-      let imagePaths: string[] = []
-
+      // Handle image generation
       if (firstAttachment) {
-        const incomingImagePath: string[] = await saveIncomingImages(firstAttachment)
-        imagePaths = await imageToImage(incomingImagePath[0], prompt)
+        const incomingPaths = await saveIncomingImages(firstAttachment)
+        try {
+          imagePaths = await imageToImage(incomingPaths[0], prompt)
+          // Cleanup input image after processing
+          incomingPaths.forEach((path) => fs.promises.unlink(path).catch(console.error))
+        } catch (error) {
+          // Cleanup input image on error
+          incomingPaths.forEach((path) => fs.promises.unlink(path).catch(console.error))
+          throw error
+        }
       } else {
         imagePaths = await textToImage({ prompt })
       }
 
+      // Send generated image
       const attachment = new AttachmentBuilder(imagePaths[0])
       await message.reply({ files: [attachment] })
+
+      // Cleanup output image after sending
+      imagePaths.forEach((path) => fs.promises.unlink(path).catch(console.error))
+
+      // Clean up processing message
+      await processingMessage.delete().catch(console.error)
     } catch (error) {
       console.error('Error generating image:', error)
-      // Send error as DM to avoid cluttering the channel
+
+      // Cleanup any remaining files
+      imagePaths.forEach((path) => fs.promises.unlink(path).catch(console.error))
+
+      // Handle error messaging
       try {
+        // Send detailed error via DM
         await message.author.send(`Error generating image: ${error}`)
-        // Send a brief public response indicating error was sent via DM
-        await message.reply({
-          content: "I encountered an error. I've sent you the details via DM.",
-        })
+
+        // Send brief public notice
+        await message.reply("I encountered an error. I've sent you the details via DM.")
       } catch (dmError) {
-        // Fallback if DM fails
-        await message.reply({
-          content: `Error: ${error}`,
-        })
+        // Fallback to public error message if DM fails
+        await message.reply(`Failed to generate image. Please try again later.`)
       }
     }
   }
