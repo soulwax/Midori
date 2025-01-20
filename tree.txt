@@ -1,0 +1,42 @@
+├───.env-sample
+├───.eslintignore
+├───.eslintrc.js
+├───.gitignore
+├───.prettierrc
+├───CONTRIBUTING.md
+├───LICENSE
+├───package-lock.json
+├───package.json
+├───README.md
+├───tree.txt
+├───tsconfig.json
+├───images
+│   └───out
+│       └───txt2img_3234259517.png
+└───src
+    ├───app.ts
+    ├───config.ts
+    ├───exec.ts
+    ├───setup.ts
+    ├───types.ts
+    ├───utils.ts
+    └───commands
+        ├───3dmodel.ts
+        ├───analogfilm.ts
+        ├───anime.ts
+        ├───cinematic.ts
+        ├───comicbook.ts
+        ├───diffuse.ts
+        ├───digitalart.ts
+        ├───fantasyart.ts
+        ├───fractal.ts
+        ├───help.ts
+        ├───isometric.ts
+        ├───lineart.ts
+        ├───lowpoly.ts
+        ├───modelingcompound.ts
+        ├───neonpunk.ts
+        ├───origami.ts
+        ├───photographic.ts
+        ├───pixelart.ts
+        └───tiletexture.ts

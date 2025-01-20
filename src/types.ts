@@ -1,3 +1,5 @@
+// File: src/types.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 

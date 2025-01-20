@@ -1,3 +1,5 @@
+// File: src/app.ts
+
 /*
 Copyright (C) 2023 github@soulwax
 

@@ -1,3 +1,5 @@
+// File: src/utils.ts
+
 /*eslint prefer-rest-params: 0*/
 /*
 Copyright (C) 2023 github@soulwax

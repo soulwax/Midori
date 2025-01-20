@@ -1,3 +1,5 @@
+// File: src/exec.ts
+
 import { AttachmentBuilder, CommandInteraction } from 'discord.js'
 import config from './config'
 import { RequestBodyOptions } from './types'
