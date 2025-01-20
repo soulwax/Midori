@@ -1,19 +1,19 @@
-# Midoridan
+# Midori
 
-![GitHub license](https://img.shields.io/github/license/soulwax/Midoridan)
-![GitHub stars](https://img.shields.io/github/stars/soulwax/Midoridan)
-![GitHub issues](https://img.shields.io/github/issues/soulwax/Midoridan)
-![GitHub forks](https://img.shields.io/github/forks/soulwax/Midoridan)
+![GitHub license](https://img.shields.io/github/license/soulwax/Midori)
+![GitHub stars](https://img.shields.io/github/stars/soulwax/Midori)
+![GitHub issues](https://img.shields.io/github/issues/soulwax/Midori)
+![GitHub forks](https://img.shields.io/github/forks/soulwax/Midori)
 ![Node.js Version](https://img.shields.io/node/v/discord.js)
 ![TypeScript Version](https://img.shields.io/npm/types/typescript)
 
 ## Overview
 
-Midoridan is a Discord bot developed using TypeScript and Discord.js. Currently, the bot offers a greeting message and can send messages to the Stable Diffusion API when prompted. The primary functionality includes generating and posting images to Discord.
+Midori is a Discord bot developed using TypeScript and Discord.js. Currently, the bot offers a greeting message and can send messages to the Stable Diffusion API when prompted. The primary functionality includes generating and posting images to Discord.
 
 ## Table of Contents
 
-- [Midoridan](#midoridan)
+- [Midori](#midori)
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Requirements](#requirements)
@@ -64,14 +64,14 @@ You should be good to go. Further details on the configuration can be found in t
 
 ## Code Structure
 
-- [`src/app.ts`](https://github.com/soulwax/Midoridan/blob/main/src/app.ts): Main application file that initializes the bot.
-- [`src/setup.ts`](https://github.com/soulwax/Midoridan/blob/main/src/setup.ts): Sets up the Discord client and REST API.
-- [`src/commands/diffuse.ts`](https://github.com/soulwax/Midoridan/blob/main/src/commands/diffuse.ts): Handles the `diffuse` command (planned feature).
+- [`src/app.ts`](https://github.com/soulwax/Midori/blob/main/src/app.ts): Main application file that initializes the bot.
+- [`src/setup.ts`](https://github.com/soulwax/Midori/blob/main/src/setup.ts): Sets up the Discord client and REST API.
+- [`src/commands/diffuse.ts`](https://github.com/soulwax/Midori/blob/main/src/commands/diffuse.ts): Handles the `diffuse` command (planned feature).
 
 ## Coding Standards
 
-- ESLint: Follow the rules defined in the [configuration file](https://github.com/soulwax/Midoridan/blob/main/.eslintrc.js).
-- Prettier: Code formatting is handled by [Prettier](https://github.com/soulwax/Midoridan/blob/main/.prettierrc).
+- ESLint: Follow the rules defined in the [configuration file](https://github.com/soulwax/Midori/blob/main/.eslintrc.js).
+- Prettier: Code formatting is handled by [Prettier](https://github.com/soulwax/Midori/blob/main/.prettierrc).
 
 ## Prerequisites
 
@@ -82,21 +82,21 @@ You should be good to go. Further details on the configuration can be found in t
 
 1. Clone the repository:
 
-    ```bash
-    git clone https://github.com/soulwax/Midoridan.git
-    ```
+   ```bash
+   git clone https://github.com/soulwax/Midori.git
+   ```
 
 2. Navigate to the project directory:
 
-    ```bash
-    cd Midoridan
-    ```
+   ```bash
+   cd Midori
+   ```
 
 3. Install dependencies:
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 ## Usage
 
@@ -110,9 +110,9 @@ npm start
 
 1. Copy `.env-sample` to `.env`:
 
-    ```bash
-    cp .env-sample .env
-    ```
+   ```bash
+   cp .env-sample .env
+   ```
 
 2. Edit `.env` to include your specific configuration. The following environment variables can be set:
 

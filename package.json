@@ -1,7 +1,7 @@
 {
-  "name": "midoridan",
+  "name": "midori",
   "version": "1.1.0",
-  "description": "Midoridan is a Discord bot. Currently, the bot offers users the text to image functionality of the Stable Diffusion API when prompted. It supports slash commands. The primary functionality includes generating and posting images to Discord.",
+  "description": "Midori is a Discord bot. Currently, the bot offers users the text to image functionality of the Stable Diffusion API when prompted. It supports slash commands. The primary functionality includes generating and posting images to Discord.",
   "main": "src/app.ts",
   "private": true,
   "scripts": {
@@ -11,17 +11,17 @@
     "build": "tsc",
     "postinstall": "tsc",
     "watch": "tsc -w",
-    "pm2": "pm2 start dist/app.js --name=Midoridan --node-args=\"--inspect --inspect-port=9331 --harmony\"",
+    "pm2": "pm2 start dist/app.js --name=Midori --node-args=\"--inspect --inspect-port=9331 --harmony\"",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --fix --ext .ts src"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/soulwax/Midoridan.git"
+    "url": "git+https://github.com/soulwax/Midori.git"
   },
   "keywords": [
     "stability-ai",
-    "midoridan",
+    "midori",
     "discord",
     "discord.js",
     "discord bot",

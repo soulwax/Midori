@@ -1,10 +1,10 @@
-# Contributing to Midoridan
+# Contributing to Midori
 
-First off, thank you for considering contributing to Midoridan! It's people like you that make a real difference in the open source community.
+First off, thank you for considering contributing to Midori! It's people like you that make a real difference in the open source community.
 
 ## Table of Contents
 
-- [Contributing to Midoridan](#contributing-to-midoridan)
+- [Contributing to Midori](#contributing-to-midori)
   - [Table of Contents](#table-of-contents)
   - [Code of Conduct](#code-of-conduct)
   - [Getting Started](#getting-started)
@@ -43,7 +43,7 @@ I think a code of conduct is unnecessary. You're probably an adult human being, 
 ## Setting Up the Development Environment
 
 1. Fork the repository to your GitHub account.
-2. Clone your fork locally: `git clone https://github.com/your-username/Midoridan.git`
+2. Clone your fork locally: `git clone https://github.com/your-username/Midori.git`
 3. Install the required dependencies: `npm install`
 4. Make your changes in a new git branch: `git checkout -b my-fix-branch main`
 
