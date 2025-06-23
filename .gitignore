@@ -134,3 +134,5 @@ dist
 images/
 
 tree.txt
+
+.env.keys
