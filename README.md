@@ -117,7 +117,6 @@ npm start
 2. Edit `.env` to include your specific configuration. The following environment variables can be set:
 
 - `DISCORD_CLIENT_ID`: Your Discord client ID.
-- `DISCORD_CLIENT_SECRET`: Your Discord client secret.
 - `DISCORD_TOKEN`: Your Discord bot token.
 - `STABLE_DIFFUSION_API_KEY`: Your API key for Stable Diffusion API.
 - `GENERAL_CHANNEL_ID`: Currently unused but one could limit the bot to post only there.
